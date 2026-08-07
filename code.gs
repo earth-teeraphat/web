@@ -11,7 +11,7 @@
 
 // Global Configuration Variables
 const CONFIG = {
-  SHEET_NAME: "บันทึกการทำเวร",       // ชื่อชีตสำหรับบันทึกข้อมูล
+  SHEET_ID: "17dS7KQME0t0KLdw1RUKsKwfFm3sov9lz0vFyo4rswws",       // ชื่อชีตสำหรับบันทึกข้อมูล
   FOLDER_ID: "1o9i_Vc1EnD_i3YAUq6H30DEKznJ7vYeA",                     // หากต้องการกำหนด Google Drive Folder ID เจาะจง ให้ใส่ตรงนี้ (ถ้าว่างไว้ระบบจะสร้างโฟลเดอร์ให้อัตโนมัติ)
   FOLDER_NAME: "" // ชื่อโฟลเดอร์สำรองหากไม่ได้ระบุ ID
 };
