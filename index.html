@@ -1,248 +1,1557 @@
-/**
- * ==============================================================================
- * ระบบรายงานการทำเวรประจำวัน ม.4/3 โรงเรียนหล่มสักวิทยาคม (Google Apps Script Backend)
- * ==============================================================================
- * คำแนะนำการใช้งาน:
- * 1. นำโค้ดนี้ไปวางในไฟล์ Code.gs บน Google Apps Script
- * 2. ระบุ FOLDER_ID ของ Google Drive สำหรับเก็บรูปภาพ
- * 3. ทำการ Deploy เป็น Web App (Execute as: Me, Who has access: Anyone)
- */
-
-// Global Configuration Variables
-const CONFIG = {
-  SHEET_NAME: "บันทึกการทำเวร",       // ชื่อชีตสำหรับบันทึกข้อมูล
-  FOLDER_ID: "1o9i_Vc1EnD_i3YAUq6H30DEKznJ7vYeA",                     // หากต้องการกำหนด Google Drive Folder ID เจาะจง ให้ใส่ตรงนี้ (ถ้าว่างไว้ระบบจะสร้างโฟลเดอร์ให้อัตโนมัติ)
-  FOLDER_NAME: "ภาพถ่ายเวรประจำวัน_ม43" // ชื่อโฟลเดอร์สำรองหากไม่ได้ระบุ ID
-};
-
-/**
- * ฟังก์ชันหลักในการแสดงผลหน้าเว็บ HTML (Web App Entry Point)
- */
-function doGet(e) {
-  try {
-    return HtmlService.createTemplateFromFile('index')
-      .evaluate()
-      .setTitle('ระบบรายงานการทำเวรประจำวัน ม.4/3 โรงเรียนหล่มสักวิทยาคม')
-      .addMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  } catch (err) {
-    return HtmlService.createHtmlOutput("เกิดข้อผิดพลาดในการโหลดระบบ: " + err.toString());
-  }
-}
-
-/**
- * รองรับการส่งข้อมูลผ่าน Web API POST (สำหรับกรณีการเชื่อมต่อจากภายนอก)
- */
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const result = saveDutyReport(data);
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ระบบรายงานการทำเวรประจำวัน ม.4/3 โรงเรียนหล่มสักวิทยาคม</title>
     
-    return ContentService.createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "error",
-      message: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-/**
- * บันทึกรายงานการทำเวรลง Google Sheet และอัปโหลดรูปภาพลง Google Drive
- * @param {Object} data ข้อมูลรายงานที่ส่งมาจาก Frontend
- * @returns {Object} ผลลัพธ์สถานะการทำงาน
- */
-function saveDutyReport(data) {
-  try {
-    const sheet = getOrCreateSheet();
-    let imageUrl = "";
-
-    // 1. จัดการอัปโหลดรูปภาพไปยัง Google Drive
-    if (data.imageData && data.imageData.includes("base64,")) {
-      imageUrl = uploadImageToDrive(data.imageData, data.date, data.dayOfWeek, data.shift);
-    }
-
-    // 2. แปลงรายการสถานะนักเรียนเป็นข้อความ JSON
-    const studentStatusJson = JSON.stringify(data.studentStatuses || []);
-    const areasString = Array.isArray(data.areas) ? data.areas.join(", ") : (data.areas || "");
-
-    // 3. เพิ่มข้อมูลลงในแถวใหม่ของ Google Sheet
-    const recordId = "REP-" + Date.now();
-    sheet.appendRow([
-      recordId,
-      new Date(),                  // วันเวลาที่บันทึก
-      data.date,                   // วันที่ปฏิบัติหน้าที่
-      data.dayOfWeek,              // วันประจำสัปดาห์
-      data.shift,                  // ช่วงเวลา (เช้า/เย็น)
-      data.completedCount || 0,    // จำนวนคนที่ทำเรียบร้อย
-      data.totalCount || 0,        // จำนวนนักเรียนเวรทั้งหมด
-      studentStatusJson,          // รายละเอียดการเช็คชื่อรายบุคคล (JSON)
-      areasString,                // บริเวณที่ทำความสะอาด
-      imageUrl,                   // ลิงก์รูปภาพใน Google Drive
-      data.remarks || ""          // หมายเหตุ
-    ]);
-
-    return {
-      status: "success",
-      message: "บันทึกรายงานการทำเวรสำเร็จเรียบร้อยแล้ว",
-      id: recordId,
-      imageUrl: imageUrl
-    };
-
-  } catch (err) {
-    Logger.log("Error in saveDutyReport: " + err.toString());
-    return {
-      status: "error",
-      message: "เกิดข้อผิดพลาดฝั่ง Server: " + err.toString()
-    };
-  }
-}
-
-/**
- * ดึงรายการประวัติการทำเวรทั้งหมดจาก Google Sheet
- * @returns {Array} รายการบันทึกเวรทั้งหมด
- */
-function getDutyReports() {
-  try {
-    const sheet = getOrCreateSheet();
-    const data = sheet.getDataRange().getValues();
+    <!-- Google Fonts (Prompt & Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    // หากมีแค่ Header
-    if (data.length <= 1) {
-      return [];
-    }
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- DataTables CSS Bootstrap 5 -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-    const reports = [];
-    // ข้ามแถวที่ 0 (Header)
-    for (let i = 1; i < data.length; i++) {
-      const row = data[i];
-      if (!row[0]) continue; // ข้ามแถวว่าง
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #06b6d4;
+            --accent-color: #8b5cf6;
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --sidebar-width: 260px;
+        }
 
-      let studentStatuses = [];
-      try {
-        studentStatuses = JSON.parse(row[7]);
-      } catch (e) {
-        studentStatuses = [];
-      }
+        body {
+            font-family: 'Prompt', 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-      reports.push({
-        id: row[0],
-        timestamp: row[1] ? new Date(row[1]).toLocaleString('th-TH') : '',
-        date: row[2] ? formatDateString(row[2]) : '',
-        dayOfWeek: row[3] || '',
-        shift: row[4] || '',
-        completedCount: Number(row[5]) || 0,
-        totalCount: Number(row[6]) || 0,
-        studentStatuses: studentStatuses,
-        areas: row[8] ? row[8].toString().split(', ') : [],
-        imageUrl: row[9] || '',
-        remarks: row[10] || ''
-      });
-    }
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
+            color: #ffffff;
+            z-index: 1040;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+        }
 
-    // เรียงลำดับจากล่าสุดไปเก่าสุด
-    return reports.reverse();
+        .sidebar .brand {
+            padding: 1.5rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
 
-  } catch (err) {
-    Logger.log("Error in getDutyReports: " + err.toString());
-    return [];
-  }
-}
+        .sidebar .brand-logo {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.4);
+        }
 
-/**
- * ฟังก์ชันช่วยแปลงภาพ Base64 และบันทึกลงใน Google Drive
- */
-function uploadImageToDrive(base64Data, date, day, shift) {
-  try {
-    const folder = getDriveFolder();
-    
-    // ดึงประเภทไฟล์และข้อมูล Base64
-    const splitData = base64Data.split("base64,");
-    const contentType = splitData[0].split(":")[1].split(";")[0];
-    const decodedData = Utilities.base64Decode(splitData[1]);
-    
-    const fileName = `เวร_${day}_${date}_${shift.includes("เช้า") ? "เช้า" : "เย็น"}_${Date.now()}.jpg`;
-    const blob = Utilities.newBlob(decodedData, contentType, fileName);
-    
-    // สร้างไฟล์ใน Drive
-    const file = folder.createFile(blob);
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    
-    // คืนค่า Direct CDN Image URL เพื่อให้ <img> แสดงผลได้โดยตรง
-    return "https://lh3.googleusercontent.com/d/" + file.getId();
-  } catch (e) {
-    Logger.log("Image upload error: " + e.toString());
-    return "";
-  }
-}
+        .sidebar-menu {
+            padding: 1.25rem 0.75rem;
+            list-style: none;
+            margin: 0;
+        }
 
-/**
- * ตรวจสอบและดึงชีตสำหรับเก็บข้อมูล หากยังไม่มีจะสร้างขึ้นใหม่อัตโนมัติพร้อม Header
- */
-function getOrCreateSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
+        .sidebar-menu .nav-item {
+            margin-bottom: 0.35rem;
+        }
 
-  if (!sheet) {
-    sheet = ss.insertSheet(CONFIG.SHEET_NAME);
-    // สร้าง Header Column
-    const headers = [
-      "ID",
-      "วันเวลาที่บันทึก",
-      "วันที่ทำเวร",
-      "วันประจำสัปดาห์",
-      "ช่วงเวลา",
-      "จำนวนที่ทำเรียบร้อย",
-      "จำนวนเวรทั้งหมด",
-      "สถานะการเช็คชื่อ (JSON)",
-      "บริเวณที่ทำความสะอาด",
-      "ลิงก์รูปภาพ Drive",
-      "หมายเหตุ"
-    ];
-    sheet.appendRow(headers);
-    
-    // ตกแต่ง Header
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground("#1e1b4b")
-               .setFontColor("#ffffff")
-               .setFontWeight("bold")
-               .setHorizontalAlignment("center");
-    sheet.setFrozenRows(1);
-  }
+        .sidebar-menu .nav-link {
+            color: #c7d2fe;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
-  return sheet;
-}
+        .sidebar-menu .nav-link:hover,
+        .sidebar-menu .nav-link.active {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(5px);
+        }
 
-/**
- * ดึงโฟลเดอร์ Google Drive หรือสร้างใหม่หากไม่มี
- */
-function getDriveFolder() {
-  if (CONFIG.FOLDER_ID && CONFIG.FOLDER_ID.trim() !== "") {
-    try {
-      return DriveApp.getFolderById(CONFIG.FOLDER_ID);
-    } catch (e) {
-      Logger.log("Folder ID ไม่ถูกต้อง กำลังใช้โฟลเดอร์สำรอง...");
-    }
-  }
+        .sidebar-menu .nav-link.active {
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+        }
 
-  const folders = DriveApp.getFoldersByName(CONFIG.FOLDER_NAME);
-  if (folders.hasNext()) {
-    return folders.next();
-  } else {
-    return DriveApp.createFolder(CONFIG.FOLDER_NAME);
-  }
-}
+        /* Main Content Layout */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            padding-bottom: 3rem;
+        }
 
-/**
- * แปลงวันที่เป็น YYYY-MM-DD
- */
-function formatDateString(d) {
-  if (d instanceof Date) {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-  return d.toString().split('T')[0];
-}
+        /* Navbar Header */
+        .top-navbar {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.85rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        /* Modern Cards */
+        .card-modern {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-modern:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06);
+        }
+
+        .stat-card {
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+        }
+
+        /* Student Checklist Card */
+        .student-item-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            margin-bottom: 0.65rem;
+            background-color: #fff;
+            transition: all 0.2s ease;
+        }
+
+        .student-item-card:hover {
+            border-color: var(--primary-color);
+            background-color: #f8fafc;
+        }
+
+        /* Dropzone Upload */
+        .upload-dropzone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 14px;
+            padding: 1.75rem 1rem;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .upload-dropzone:hover {
+            border-color: var(--primary-color);
+            background: #f1f5f9;
+        }
+
+        .img-preview-box {
+            max-height: 220px;
+            border-radius: 12px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        /* Overlay Backdrop for Mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 1035;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-logo">
+                <i class="fa-solid fa-broom"></i>
+            </div>
+            <div>
+                <h6 class="mb-0 fw-bold text-white">เวรประจำวัน ม.4/3</h6>
+                <small class="text-indigo-200 opacity-75" style="font-size: 0.72rem;">โรงเรียนหล่มสักวิทยาคม</small>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="nav-item">
+                <a class="nav-link active" onclick="switchTab('dashboard')">
+                    <i class="fa-solid fa-chart-pie me-1"></i>
+                    <span>แดชบอร์ดสรุปผล</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="switchTab('report-duty')">
+                    <i class="fa-solid fa-pen-to-square me-1"></i>
+                    <span>บันทึกการทำเวร</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="switchTab('history')">
+                    <i class="fa-solid fa-list-check me-1"></i>
+                    <span>ประวัติ & รายงาน</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="switchTab('roster')">
+                    <i class="fa-solid fa-users me-1"></i>
+                    <span>ตารางเวรประจำวัน</span>
+                </a>
+            </li>
+            
+        </ul>
+    </aside>
+
+    <!-- Main Content Layout -->
+    <div class="main-content">
+        <!-- Top Navbar -->
+        <header class="top-navbar d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-light d-lg-none border" type="button" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div>
+                    <h5 class="fw-bold mb-0 text-dark" id="page-title">แดชบอร์ดสรุปผล</h5>
+                    <small class="text-muted d-none d-sm-inline-block">ระบบติดตามและบันทึกรายงานการทำเวรทำความสะอาดห้องเรียน</small>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-dark border px-3 py-2 d-none d-md-inline-block">
+                    <i class="fa-regular fa-calendar-check text-primary me-1"></i>
+                    <span id="current-date-text">กำลังโหลดวันที่...</span>
+                </span>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="syncData()">
+                    <i class="fa-solid fa-rotate me-1" id="sync-icon"></i> รีเฟรช
+                </button>
+            </div>
+        </header>
+
+        <!-- Main View Area -->
+        <main class="container-fluid p-3 p-md-4">
+
+            <!-- SECTION 1: DASHBOARD -->
+            <section id="section-dashboard" class="tab-content-section">
+                <!-- Summary Metrics Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-lg-3">
+                        <div class="card-modern stat-card">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="text-muted small fw-medium">เวรประจำวันนี้</span>
+                                    <h3 class="fw-bold mb-0 mt-1 text-dark" id="stat-today-total">0</h3>
+                                    <small class="text-primary fw-medium" id="stat-today-dayname">วัน...</small>
+                                </div>
+                                <div class="stat-icon" style="background:#e0e7ff; color:#4338ca;">
+                                    <i class="fa-solid fa-user-group"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="card-modern stat-card">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="text-muted small fw-medium">ทำเวรเรียบร้อย</span>
+                                    <h3 class="fw-bold mb-0 mt-1 text-success" id="stat-today-completed">0</h3>
+                                    <small class="text-success" id="stat-today-pct">0% ของวันนี้</small>
+                                </div>
+                                <div class="stat-icon" style="background:#d1fae5; color:#047857;">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="card-modern stat-card">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="text-muted small fw-medium">ขาด/ไม่มาทำเวร</span>
+                                    <h3 class="fw-bold mb-0 mt-1 text-danger" id="stat-today-absent">0</h3>
+                                    <small class="text-danger">บันทึกวันนี้</small>
+                                </div>
+                                <div class="stat-icon" style="background:#fee2e2; color:#b91c1c;">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="card-modern stat-card">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="text-muted small fw-medium">รวมรายงานทั้งหมด</span>
+                                    <h3 class="fw-bold mb-0 mt-1 text-dark" id="stat-total-reports">0</h3>
+                                    <small class="text-muted">รายการทั้งหมด</small>
+                                </div>
+                                <div class="stat-icon" style="background:#f3e8ff; color:#6b21a8;">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts & Quick Action Section -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-lg-8">
+                        <div class="card-modern p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-chart-column text-primary me-2"></i>สถิติการปฏิบัติหน้าที่แยกตามวัน</h6>
+                                <span class="badge bg-light text-secondary border">ภาพรวมสัปดาห์</span>
+                            </div>
+                            <div style="position: relative; height:280px;">
+                                <canvas id="chartWeeklyStats"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <div class="card-modern p-4 h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <h6 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-bolt text-warning me-2"></i>เมนูดำเนินการด่วน</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary btn-lg rounded-3 text-start px-3 py-2" onclick="switchTab('report-duty')">
+                                        <i class="fa-solid fa-circle-plus me-2"></i> บันทึกเวรประจำวันนี้
+                                    </button>
+                                    <button class="btn btn-outline-dark rounded-3 text-start px-3 py-2" onclick="switchTab('roster')">
+                                        <i class="fa-solid fa-calendar-days me-2"></i> ตรวจสอบตารางรายชื่อเวร
+                                    </button>
+                                    <button class="btn btn-outline-secondary rounded-3 text-start px-3 py-2" onclick="switchTab('history')">
+                                        <i class="fa-solid fa-magnifying-glass me-2"></i> ค้นหาและดูประวัติย้อนหลัง
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 rounded-3" style="background: #eef2ff; border: 1px solid #c7d2fe;">
+                                <div class="d-flex align-items-center gap-2 text-primary fw-semibold mb-1">
+                                    <i class="fa-solid fa-bullhorn"></i> แจ้งเตือนข้อปฏิบัติ
+                                </div>
+                                <small class="text-secondary" style="font-size: 0.82rem;">
+                                    เวรเช้าต้องทำความสะอาดให้เสร็จก่อนเวลา 07.45 น. และเวรเย็นทำความสะอาดหลังเลิกเรียนพร้อมถ่ายรูปส่งรายงานครับ
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Submissions Table -->
+                <div class="card-modern p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-clock-rotate-left text-info me-2"></i>รายการบันทึกล่าสุด</h6>
+                        <a onclick="switchTab('history')" class="text-decoration-none small fw-semibold cursor-pointer">ดูทั้งหมด <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="recent-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>วันที่/เวลา</th>
+                                    <th>วัน</th>
+                                    <th>ช่วงเวลา</th>
+                                    <th>บริเวณทำความสะอาด</th>
+                                    <th>สถานะสรุป</th>
+                                    <th>หลักฐานรูปถ่าย</th>
+                                    <th>การจัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-table-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: REPORT DUTY FORM -->
+            <section id="section-report-duty" class="tab-content-section d-none">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-xl-10">
+                        <div class="card-modern p-4">
+                            <div class="border-bottom pb-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                    <h5 class="fw-bold text-dark mb-1"><i class="fa-solid fa-file-pen text-primary me-2"></i>แบบฟอร์มบันทึกการทำเวรประจำวัน ม.4/3</h5>
+                                    <p class="text-muted small mb-0">กรุณาเลือกวัน ตรวจสอบรายชื่อ เช็คสถานะ และแนบรูปถ่ายการทำความสะอาด</p>
+                                </div>
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2">
+                                    <i class="fa-solid fa-shield-halved me-1"></i> Lomsakwittayakom Class 4/3
+                                </span>
+                            </div>
+
+                            <form id="dutyReportForm" onsubmit="handleFormSubmit(event)">
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">วันที่บันทึก <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control form-control-lg fs-6" id="reportDate" required onchange="onDatePickerChange()">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">ประจำวัน <span class="text-danger">*</span></label>
+                                        <select class="form-select form-select-lg fs-6" id="reportDayOfWeek" required onchange="onDayOfWeekSelectChange()">
+                                            <option value="วันจันทร์">วันจันทร์</option>
+                                            <option value="วันอังคาร">วันอังคาร</option>
+                                            <option value="วันพุธ">วันพุธ</option>
+                                            <option value="วันพฤหัสบดี">วันพฤหัสบดี</option>
+                                            <option value="วันศุกร์">วันศุกร์</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">ช่วงเวลาทำเวร <span class="text-danger">*</span></label>
+                                        <select class="form-select form-select-lg fs-6" id="reportShift" required>
+                                            <option value="เช้า (07.00 - 07.45 น.)">เช้า (07.00 - 07.45 น.)</option>
+                                            <option value="เย็น (15.30 - 16.30 น.)">เย็น (15.30 - 16.30 น.)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic Students Attendance List -->
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="form-label fw-bold mb-0">
+                                            <i class="fa-solid fa-clipboard-user text-indigo me-1"></i> เช็คชื่อนักเรียนผู้รับผิดชอบเวร (<span id="day-student-count">0</span> คน)
+                                        </label>
+                                        <div class="btn-group btn-group-sm">
+                                            <button type="button" class="btn btn-outline-success" onclick="markAllStatus('ทำเวรเรียบร้อย')"><i class="fa-solid fa-check"></i> เรียบร้อยทั้งหมด</button>
+                                        </div>
+                                    </div>
+
+                                    <div id="students-checklist-container" class="p-3 bg-light rounded-3 border">
+                                        <!-- Dynamic student checklist items rendered here -->
+                                    </div>
+                                </div>
+
+                                <!-- Cleaning Areas Checklist -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">จุดการทำความสะอาดที่ดำเนินการ <span class="text-danger">*</span></label>
+                                    <div class="row g-2">
+                                        <div class="col-6 col-md-4">
+                                            <div class="form-check card p-2 px-3 border mb-0">
+                                                <input class="form-check-input area-checkbox" type="checkbox" value="กวาดพื้น/ถูพื้นห้องเรียน" id="area1" checked>
+                                                <label class="form-check-label small fw-medium cursor-pointer" for="area1">กวาดพื้น/ถูพื้นห้องเรียน</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-4">
+                                            <div class="form-check card p-2 px-3 border mb-0">
+                                                <input class="form-check-input area-checkbox" type="checkbox" value="ลบกระดาน/ทำความสะอาดหน้าห้อง" id="area2" checked>
+                                                <label class="form-check-label small fw-medium cursor-pointer" for="area2">ลบกระดาน/เช็ดหน้าห้อง</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-4">
+                                            <div class="form-check card p-2 px-3 border mb-0">
+                                                <input class="form-check-input area-checkbox" type="checkbox" value="จัดโต๊ะเก้าอี้ให้เป็นระเบียบ" id="area3" checked>
+                                                <label class="form-check-label small fw-medium cursor-pointer" for="area3">จัดโต๊ะเก้าอี้เรียบร้อย</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-4">
+                                            <div class="form-check card p-2 px-3 border mb-0">
+                                                <input class="form-check-input area-checkbox" type="checkbox" value="นำขยะไปทิ้งที่จุดรวบรวม" id="area4" checked>
+                                                <label class="form-check-label small fw-medium cursor-pointer" for="area4">นำขยะไปทิ้งขยะ</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-4">
+                                            <div class="form-check card p-2 px-3 border mb-0">
+                                                <input class="form-check-input area-checkbox" type="checkbox" value="ทำความสะอาดระเบียง/หลังห้อง" id="area5">
+                                                <label class="form-check-label small fw-medium cursor-pointer" for="area5">ระเบียง/หลังห้องเรียน</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-4">
+                                            <div class="form-check card p-2 px-3 border mb-0">
+                                                <input class="form-check-input area-checkbox" type="checkbox" value="ปิดไฟ/ปิดพัดลม/ล็อคประตู" id="area6">
+                                                <label class="form-check-label small fw-medium cursor-pointer" for="area6">ปิดไฟ-พัดลม/ปิดประตู</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Image Upload Integration -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">อัปโหลดภาพถ่ายหลักฐานการทำเวร (Google Drive) <span class="text-danger">*</span></label>
+                                    <div class="upload-dropzone" onclick="document.getElementById('dutyPhotoInput').click()">
+                                        <i class="fa-solid fa-cloud-arrow-up text-primary display-6 mb-2"></i>
+                                        <h6 class="fw-bold mb-1">คลิกเพื่อเลือกรูปถ่าย หรือ ถ่ายภาพด้วยกล้อง</h6>
+                                        <small class="text-muted">รองรับไฟล์ JPG, PNG (ระบบจะอัปโหลดและบีบอัดภาพก่อนบันทึกลง Google Drive)</small>
+                                        <input type="file" id="dutyPhotoInput" accept="image/*" class="d-none" onchange="previewAndCompressImage(this)">
+                                    </div>
+                                    <div id="image-preview-container" class="mt-3 text-center d-none">
+                                        <div class="position-relative d-inline-block" style="max-width: 320px;">
+                                            <img id="img-preview" src="" class="img-preview-box border shadow-sm">
+                                            <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-2" onclick="clearImagePreview()">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Remarks -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">หมายเหตุ / ปัญหาที่พบ (ถ้ามี)</label>
+                                    <textarea class="form-control" id="reportRemarks" rows="2" placeholder="เช่น อุปกรณ์ทำความสะอาดชำรุด, นักเรียนลาป่วย..."></textarea>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                                    <button type="button" class="btn btn-light px-4 border" onclick="resetDutyForm()">ล้างข้อมูล</button>
+                                    <button type="submit" class="btn btn-primary px-5 py-2 fw-semibold" id="btn-submit-report">
+                                        <i class="fa-solid fa-paper-plane me-2"></i>บันทึกรายงานการทำเวร
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: HISTORY & DATA TABLES -->
+            <section id="section-history" class="tab-content-section d-none">
+                <div class="card-modern p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                        <div>
+                            <h5 class="fw-bold text-dark mb-1"><i class="fa-solid fa-table-list text-primary me-2"></i>ประวัติการบันทึกรายงานการทำเวร</h5>
+                            <small class="text-muted">ค้นหา กรอง และส่งออกข้อมูลการทำเวรของนักเรียนชั้น ม.4/3</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-success btn-sm" onclick="exportToCSV()">
+                                <i class="fa-solid fa-file-excel me-1"></i> Export Excel/CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Options -->
+                    <div class="row g-2 mb-4 p-3 bg-light rounded-3 border">
+                        <div class="col-md-3">
+                            <label class="small text-muted fw-semibold">กรองตามวัน:</label>
+                            <select class="form-select form-select-sm" id="filterDay" onchange="applyFilters()">
+                                <option value="">-- ทุกวันประจำสัปดาห์ --</option>
+                                <option value="วันจันทร์">วันจันทร์</option>
+                                <option value="วันอังคาร">วันอังคาร</option>
+                                <option value="วันพุธ">วันพุธ</option>
+                                <option value="วันพฤหัสบดี">วันพฤหัสบดี</option>
+                                <option value="วันศุกร์">วันศุกร์</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted fw-semibold">กรองตามช่วงเวลา:</label>
+                            <select class="form-select form-select-sm" id="filterShift" onchange="applyFilters()">
+                                <option value="">-- ทุกช่วงเวลา --</option>
+                                <option value="เช้า">ช่วงเช้า</option>
+                                <option value="เย็น">ช่วงเย็น</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted fw-semibold">ค้นหารายชื่อนักเรียน / ข้อความ:</label>
+                            <input type="text" class="form-control form-control-sm" id="filterStudent" placeholder="พิมพ์ชื่อนักเรียน..." onkeyup="applyFilters()">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button class="btn btn-sm btn-secondary w-100" onclick="resetFilters()">ล้างการกรอง</button>
+                        </div>
+                    </div>
+
+                    <!-- DataTable -->
+                    <div class="table-responsive">
+                        <table id="historyDataTable" class="table table-striped table-hover align-middle w-100">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>วันที่</th>
+                                    <th>ประจำวัน</th>
+                                    <th>ช่วงเวลา</th>
+                                    <th>สรุปผลการเช็คชื่อ</th>
+                                    <th>งานที่ปฏิบัติ</th>
+                                    <th>ภาพหลักฐาน</th>
+                                    <th>หมายเหตุ</th>
+                                    <th>จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data rows injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: DUTY ROSTER SCHEDULE -->
+            <section id="section-roster" class="tab-content-section d-none">
+                <div class="card-modern p-4 mb-4">
+                    <div class="text-center max-w-2xl mx-auto mb-4">
+                        <span class="badge px-3 py-2 rounded-pill fw-semibold mb-2" style="background:#e0e7ff; color:#3730a3;">
+                            <i class="fa-solid fa-users-rectangle me-1"></i> รายชื่อเวรทำความสะอาดประจำวัน
+                        </span>
+                        <h4 class="fw-bold text-dark">นักเรียนชั้นมัธยมศึกษาปีที่ 4/3 โรงเรียนหล่มสักวิทยาคม</h4>
+                        <p class="text-muted small">แบ่งตามวันจันทร์ - วันศุกร์ ปฏิบัติหน้าที่รักษาความสะอาดห้องเรียน</p>
+                    </div>
+
+                    <!-- Day Tabs -->
+                    <ul class="nav nav-pills nav-fill mb-4 gap-2 border-bottom pb-3" id="rosterTabs" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active fw-semibold" data-bs-toggle="tab" data-bs-target="#roster-mon">วันจันทร์</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#roster-tue">วันอังคาร</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#roster-wed">วันพุธ</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#roster-thu">วันพฤหัสบดี</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#roster-fri">วันศุกร์</button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="rosterTabContent">
+                        <div class="tab-pane fade show active" id="roster-mon">
+                            <div class="row g-3" id="roster-list-mon"></div>
+                        </div>
+                        <div class="tab-pane fade" id="roster-tue">
+                            <div class="row g-3" id="roster-list-tue"></div>
+                        </div>
+                        <div class="tab-pane fade" id="roster-wed">
+                            <div class="row g-3" id="roster-list-wed"></div>
+                        </div>
+                        <div class="tab-pane fade" id="roster-thu">
+                            <div class="row g-3" id="roster-list-thu"></div>
+                        </div>
+                        <div class="tab-pane fade" id="roster-fri">
+                            <div class="row g-3" id="roster-list-fri"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: GAS DEPLOYMENT GUIDE -->
+            <section id="section-deployment-guide" class="tab-content-section d-none">
+                <div class="card-modern p-4">
+                    <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-code text-warning me-2"></i>คำแนะนำการติดตั้งและ Deploy บน Google Apps Script</h5>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3 border h-100">
+                                <h6 class="fw-bold text-primary"><i class="fa-solid fa-1 me-2"></i>ขั้นตอนการตั้งค่าใน Google Sheets</h6>
+                                <ol class="small text-muted ps-3 mb-0" style="line-height:1.8;">
+                                    <li>สร้าง Google Sheet ใหม่ แล้วไปที่เมนู <strong>ส่วนขยาย (Extensions)</strong> &gt; <strong>Apps Script</strong></li>
+                                    <li>ลบโค้ดเดิมใน <code>Code.gs</code> แล้วคัดลอกโค้ดจากไฟล์ <code>Code.gs</code> มาวาง</li>
+                                    <li>กดปุ่ม <strong>+ (เพิ่มไฟล์)</strong> เลือก HTML แล้วตั้งชื่อว่า <code>index</code></li>
+                                    <li>นำซอร์สโค้ดในไฟล์นี้ทั้งหมดไปวางในไฟล์ <code>index.html</code></li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3 border h-100">
+                                <h6 class="fw-bold text-success"><i class="fa-solid fa-2 me-2"></i>ขั้นตอนการ Deploy เป็น Web App</h6>
+                                <ol class="small text-muted ps-3 mb-0" style="line-height:1.8;">
+                                    <li>กดปุ่ม <strong>การทำให้ใช้งานได้ (Deploy)</strong> &gt; <strong>การทำให้ใช้งานได้ใหม่ (New Deployment)</strong></li>
+                                    <li>เลือกประเภทเป็น <strong>เว็บแอป (Web App)</strong></li>
+                                    <li>ตั้งค่า <i>Execute as:</i> <strong>ฉัน (Me)</strong></li>
+                                    <li>ตั้งค่า <i>Who has access:</i> <strong>ทุกคน (Anyone)</strong></li>
+                                    <li>กด <strong>Deploy</strong> และอนุมัติสิทธิ์ (Grant Access) เพื่อรับ URL ของแอป</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Photo Preview Modal -->
+    <div class="modal fade" id="photoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="modal-title fw-bold" id="photoModalTitle">หลักฐานการทำเวร</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <div class="position-relative mb-3">
+                        <img id="modalPhotoImg" src="" class="img-fluid rounded-3 shadow-sm" style="max-height: 400px; width:100%; object-fit:cover;" onerror="this.onerror=null; this.src='https://placehold.co/600x400/e2e8f0/475569?text=ไม่สามารถโหลดรูปภาพได้';">
+                    </div>
+                    <div id="modalPhotoDetails" class="text-start p-3 bg-light rounded-3 small mb-3"></div>
+                    <a id="modalDriveLink" href="#" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill d-none">
+                        <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> เปิดดูรูปภาพต้นฉบับบน Google Drive
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // 1. STUDENT ROSTER DATABASE BY DAY (ม.4/3 โรงเรียนหล่มสักวิทยาคม)
+        const DUTY_ROSTER = {
+            "วันจันทร์": [
+                "ธนวัฒน์ อุบลอ่อน",
+                "อัชญา สายทองติ่ง",
+                "เกียรติภัส นิ้วป้อง",
+                "จิรัฐติกาล บุญชื่น",
+                "กฤตเมธ ออดดี",
+                "ดวงกมล สำมะนี",
+                "ภัทรภูมิ จิอู๋",
+                "อัญจิรา แก่นชา"
+            ],
+            "วันอังคาร": [
+                "กายสิทธิ์ ทองเพชร",
+                "วรกานต์ ฉันเฉย",
+                "อิทธิพัทธ์ ปั่นเจริญ",
+                "ชิดชนก คำพิมา",
+                "รุ่งนภา บุตลา",
+                "ชมพูนุช ป้องคำ",
+                "ชลภัสสรน์ หนองคาย",
+                "พิมพ์ลักษณ์ อ่อนศิริ"
+            ],
+            "วันพุธ": [
+                "ศรัญญา วรสูตร",
+                "จารุนันท์ สังข์ทอง",
+                "พิราภรณ์ กิ่งเพชร",
+                "ชาญชล ตรีถัน",
+                "ศิริประภา บุสิงค์",
+                "ศิวากร สุขประเสริฐ",
+                "ธนโชติ พาแก้ว"
+            ],
+            "วันพฤหัสบดี": [
+                "ก้องภพ คำใบ",
+                "สุจิตรา มีเทียน",
+                "อรรครพนธ์ ต่วนโต",
+                "ณัฐวรรณ ไสยาน้อย",
+                "ปรียาภรณ์ ชัยงาม",
+                "พิชญา ปิยะวงค์",
+                "จารุวรรณ อ่อนสา",
+                "นพวรรณ จันทร์นวม"
+            ],
+            "วันศุกร์": [
+                "ชานนนท์ สันเบ้า",
+                "ฐิตาภรณ์ สุขประกอบ",
+                "รพีพัฒน์ โสมภา",
+                "อัยรดา ไชยอุดม",
+                "ศุภกฤต รูปศรี",
+                "พัสนัย ไพรแก่น",
+                "ตฤณนภัส แสงหล้า",
+                "ปนัดดา ศฤคคาร"
+            ]
+        };
+
+        const DAYS_MAP = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
+
+        // Application State
+        let dutyReports = [];
+        let dataTableInstance = null;
+        let weeklyChartInstance = null;
+        let selectedBase64Image = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setCurrentDateDisplay();
+            renderRosterCards();
+            setupFormDefaults();
+            initChart();
+            loadInitialData();
+        });
+
+        // Helper: Format Date object to Local YYYY-MM-DD
+        function getLocalDateString(d = new Date()) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Toggle Mobile Sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
+
+        // Switch Tab Navigation Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.sidebar-menu .nav-link').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-content-section').forEach(el => el.classList.add('d-none'));
+
+            const targetLink = document.querySelector(`.sidebar-menu a[onclick="switchTab('${tabId}')"]`);
+            if (targetLink) targetLink.classList.add('active');
+
+            const section = document.getElementById(`section-${tabId}`);
+            if (section) section.classList.remove('d-none');
+
+            // Header Titles Map
+            const titles = {
+                'dashboard': 'แดชบอร์ดสรุปผลการทำเวร',
+                'report-duty': 'แบบฟอร์มบันทึกการทำเวรประจำวัน',
+                'history': 'ประวัติและรายงานการทำเวรย้อนหลัง',
+                'roster': 'ตารางรายชื่อเวรทำความสะอาด ม.4/3',
+                'deployment-guide': 'คู่มือติดตั้ง Code.gs & Deployment'
+            };
+            document.getElementById('page-title').innerText = titles[tabId] || 'ระบบรายงานการทำเวร';
+
+            if (window.innerWidth < 992) {
+                document.getElementById('sidebar').classList.remove('show');
+                document.getElementById('sidebarOverlay').classList.remove('show');
+            }
+
+            if (tabId === 'history' && dataTableInstance) {
+                setTimeout(() => {
+                    dataTableInstance.columns.adjust().draw();
+                }, 150);
+            }
+        }
+
+        function loadInitialData() {
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withSuccessHandler((data) => {
+                        dutyReports = data || [];
+                        updateDashboardStats();
+                        refreshDataTable();
+                    })
+                    .withFailureHandler((err) => {
+                        console.warn("GAS load failed, loading fallback data:", err);
+                        initDemoData();
+                    })
+                    .getDutyReports();
+            } else {
+                initDemoData();
+            }
+        }
+
+        function setCurrentDateDisplay() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date-text').innerText = now.toLocaleDateString('th-TH', options);
+        }
+
+        function setupFormDefaults() {
+            const today = new Date();
+            const dateStr = getLocalDateString(today);
+            document.getElementById('reportDate').value = dateStr;
+
+            let currentDayName = DAYS_MAP[today.getDay()];
+            if (currentDayName === "วันเสาร์" || currentDayName === "วันอาทิตย์") {
+                currentDayName = "วันจันทร์";
+            }
+            
+            document.getElementById('reportDayOfWeek').value = currentDayName;
+            renderStudentChecklist(currentDayName);
+        }
+
+        // When Date Picker Changes: Auto-detect day of week
+        function onDatePickerChange() {
+            const dateVal = document.getElementById('reportDate').value;
+            if (!dateVal) return;
+
+            const selectedDate = new Date(dateVal + 'T00:00:00');
+            let dayName = DAYS_MAP[selectedDate.getDay()];
+            if (dayName === "วันเสาร์" || dayName === "วันอาทิตย์") {
+                dayName = "วันจันทร์";
+            }
+
+            document.getElementById('reportDayOfWeek').value = dayName;
+            renderStudentChecklist(dayName);
+        }
+
+        function onDayOfWeekSelectChange() {
+            const dayOfWeekVal = document.getElementById('reportDayOfWeek').value;
+            renderStudentChecklist(dayOfWeekVal);
+        }
+
+        function renderStudentChecklist(dayName) {
+            const container = document.getElementById('students-checklist-container');
+            const students = DUTY_ROSTER[dayName] || [];
+            document.getElementById('day-student-count').innerText = students.length;
+
+            if (students.length === 0) {
+                container.innerHTML = `<div class="text-center text-muted py-3">ไม่มีข้อมูลรายชื่อเวรประจำ${dayName}</div>`;
+                return;
+            }
+
+            let html = '<div class="row g-2">';
+            students.forEach((name, idx) => {
+                html += `
+                    <div class="col-12 col-md-6">
+                        <div class="student-item-card d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-secondary rounded-circle" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center;">${idx + 1}</span>
+                                <span class="fw-semibold text-dark">${name}</span>
+                            </div>
+                            <select class="form-select form-select-sm student-status-select" style="width: 170px;" data-student="${name}">
+                                <option value="ทำเวรเรียบร้อย" class="text-success fw-bold">✓ เรียบร้อย</option>
+                                <option value="ทำเวรไม่สะอาด/แก้ไข" class="text-warning fw-bold">⚠️ ต้องแก้ไข</option>
+                                <option value="ไม่มาทำเวร" class="text-danger fw-bold">✗ ขาดเวร</option>
+                                <option value="ลา/ติดภารกิจ" class="text-info fw-bold">ℹ️ ลา/ติดภารกิจ</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function markAllStatus(statusVal) {
+            document.querySelectorAll('.student-status-select').forEach(select => {
+                select.value = statusVal;
+            });
+        }
+
+        function initChart() {
+            const canvas = document.getElementById('chartWeeklyStats');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            weeklyChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์'],
+                    datasets: [
+                        {
+                            label: 'ทำเวรเรียบร้อย (คน)',
+                            data: [0, 0, 0, 0, 0],
+                            backgroundColor: 'rgba(79, 70, 229, 0.85)',
+                            borderRadius: 8
+                        },
+                        {
+                            label: 'ขาด/ไม่มาทำเวร (คน)',
+                            data: [0, 0, 0, 0, 0],
+                            backgroundColor: 'rgba(239, 68, 68, 0.75)',
+                            borderRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateDashboardStats() {
+            const today = new Date();
+            let currentDayName = DAYS_MAP[today.getDay()];
+            if (currentDayName === "วันเสาร์" || currentDayName === "วันอาทิตย์") {
+                currentDayName = "วันจันทร์";
+            }
+
+            document.getElementById('stat-today-dayname').innerText = currentDayName;
+            const rosterToday = DUTY_ROSTER[currentDayName] || [];
+            document.getElementById('stat-today-total').innerText = rosterToday.length;
+
+            const dateStr = getLocalDateString(today);
+            const todayReports = dutyReports.filter(r => r.date === dateStr || r.dayOfWeek === currentDayName);
+
+            let completedToday = 0;
+            let absentToday = 0;
+
+            if (todayReports.length > 0) {
+                const latestToday = todayReports[0];
+                completedToday = latestToday.completedCount || 0;
+                absentToday = (latestToday.totalCount || rosterToday.length) - completedToday;
+            }
+
+            document.getElementById('stat-today-completed').innerText = completedToday;
+            const pct = rosterToday.length > 0 ? Math.round((completedToday / rosterToday.length) * 100) : 0;
+            document.getElementById('stat-today-pct').innerText = `${pct}% ของวันนี้`;
+            document.getElementById('stat-today-absent').innerText = absentToday;
+            document.getElementById('stat-total-reports').innerText = dutyReports.length;
+
+            // Update Weekly Chart
+            if (weeklyChartInstance) {
+                const days = ['วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์'];
+                const completedData = [0, 0, 0, 0, 0];
+                const absentData = [0, 0, 0, 0, 0];
+
+                days.forEach((day, idx) => {
+                    const dayReps = dutyReports.filter(r => r.dayOfWeek === day);
+                    if (dayReps.length > 0) {
+                        const latestRep = dayReps[0];
+                        completedData[idx] = latestRep.completedCount || 0;
+                        absentData[idx] = Math.max(0, (latestRep.totalCount || 0) - (latestRep.completedCount || 0));
+                    }
+                });
+
+                weeklyChartInstance.data.datasets[0].data = completedData;
+                weeklyChartInstance.data.datasets[1].data = absentData;
+                weeklyChartInstance.update();
+            }
+
+            // Render Recent Reports
+            const recentBody = document.getElementById('recent-table-body');
+            if (recentBody) {
+                if (dutyReports.length === 0) {
+                    recentBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-3">ยังไม่มีข้อมูลรายงานการทำเวร</td></tr>`;
+                } else {
+                    const recent = dutyReports.slice(0, 5);
+                    let html = '';
+                    recent.forEach(r => {
+                        const imgDisplay = formatDriveImageUrl(r.imageUrl);
+                        const areaText = Array.isArray(r.areas) ? r.areas.join(', ') : (r.areas || '-');
+                        const pctComp = r.totalCount > 0 ? Math.round((r.completedCount / r.totalCount) * 100) : 0;
+                        let badgeClass = 'bg-success';
+                        if (pctComp < 50) badgeClass = 'bg-danger';
+                        else if (pctComp < 100) badgeClass = 'bg-warning text-dark';
+
+                        html += `
+                            <tr>
+                                <td><small class="fw-semibold">${r.date}</small></td>
+                                <td><span class="badge bg-light text-dark border">${r.dayOfWeek}</span></td>
+                                <td><small>${r.shift}</small></td>
+                                <td><small class="text-truncate d-inline-block" style="max-width: 180px;">${areaText}</small></td>
+                                <td><span class="badge ${badgeClass}">${r.completedCount}/${r.totalCount} คน (${pctComp}%)</span></td>
+                                <td>
+                                    ${r.imageUrl ? `<img src="${imgDisplay}" class="rounded border cursor-pointer" style="width:40px; height:40px; object-fit:cover;" onclick="viewPhoto('${r.id}')" title="คลิกดูภาพ">` : '<span class="text-muted small">-</span>'}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewPhoto('${r.id}')"><i class="fa-solid fa-eye"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    recentBody.innerHTML = html;
+                }
+            }
+        }
+
+        function refreshDataTable() {
+            const tbody = document.querySelector('#historyDataTable tbody');
+            if (!tbody) return;
+
+            let html = '';
+            dutyReports.forEach((r, idx) => {
+                const imgDisplay = formatDriveImageUrl(r.imageUrl);
+                const areaText = Array.isArray(r.areas) ? r.areas.join(', ') : (r.areas || '-');
+                const pctComp = r.totalCount > 0 ? Math.round((r.completedCount / r.totalCount) * 100) : 0;
+                let badgeClass = 'bg-success';
+                if (pctComp < 50) badgeClass = 'bg-danger';
+                else if (pctComp < 100) badgeClass = 'bg-warning text-dark';
+
+                let studentDetailStr = '';
+                if (Array.isArray(r.studentStatuses)) {
+                    studentDetailStr = r.studentStatuses.map(s => `${s.name}: ${s.status}`).join(', ');
+                }
+
+                html += `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td><small class="fw-bold">${r.date}</small></td>
+                        <td><span class="badge bg-primary-subtle text-primary border">${r.dayOfWeek}</span></td>
+                        <td><small>${r.shift}</small></td>
+                        <td>
+                            <span class="badge ${badgeClass} mb-1">${r.completedCount}/${r.totalCount} คน</span>
+                            <div class="small text-muted text-truncate" style="max-width: 200px;" title="${studentDetailStr}">${studentDetailStr}</div>
+                        </td>
+                        <td><small class="text-truncate d-inline-block" style="max-width:180px;" title="${areaText}">${areaText}</small></td>
+                        <td class="text-center">
+                            ${r.imageUrl ? `<img src="${imgDisplay}" class="rounded border shadow-sm cursor-pointer" style="width:45px; height:45px; object-fit:cover;" onclick="viewPhoto('${r.id}')">` : '<span class="text-muted small">ไม่มีรูป</span>'}
+                        </td>
+                        <td><small>${r.remarks || '-'}</small></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="viewPhoto('${r.id}')" title="ดูรายละเอียด/รูปภาพ"><i class="fa-solid fa-eye"></i></button>
+                                <button class="btn btn-outline-danger" onclick="deleteReport('${r.id}')" title="ลบรายการ"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+
+            if ($.fn.DataTable.isDataTable('#historyDataTable')) {
+                $('#historyDataTable').DataTable().destroy();
+            }
+
+            dataTableInstance = $('#historyDataTable').DataTable({
+                language: {
+                    search: "ค้นหา:",
+                    lengthMenu: "แสดง _MENU_ รายการ",
+                    info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+                    infoEmpty: "ไม่มีรายการ",
+                    zeroRecords: "ไม่พบข้อมูลที่ค้นหา",
+                    paginate: {
+                        first: "หน้าแรก",
+                        previous: "ก่อนหน้า",
+                        next: "ถัดไป",
+                        last: "หน้าสุดท้าย"
+                    }
+                },
+                order: [[1, 'desc']],
+                pageLength: 10,
+                responsive: true
+            });
+        }
+
+        function initDemoData() {
+            const saved = localStorage.getItem('lomsak_duty_reports');
+            if (saved) {
+                try {
+                    dutyReports = JSON.parse(saved);
+                } catch (e) {
+                    dutyReports = getDemoSeedData();
+                }
+            } else {
+                dutyReports = getDemoSeedData();
+                localStorage.setItem('lomsak_duty_reports', JSON.stringify(dutyReports));
+            }
+            updateDashboardStats();
+            refreshDataTable();
+        }
+
+        function getDemoSeedData() {
+            const todayStr = getLocalDateString();
+            return [
+                {
+                    id: 'REP-1001',
+                    timestamp: new Date().toLocaleString('th-TH'),
+                    date: todayStr,
+                    dayOfWeek: 'วันจันทร์',
+                    shift: 'เช้า (07.00 - 07.45 น.)',
+                    completedCount: 8,
+                    totalCount: 8,
+                    studentStatuses: DUTY_ROSTER['วันจันทร์'].map(name => ({ name, status: 'ทำเวรเรียบร้อย' })),
+                    areas: ['กวาดพื้น/ถูพื้นห้องเรียน', 'ลบกระดาน/ทำความสะอาดหน้าห้อง', 'จัดโต๊ะเก้าอี้ให้เป็นระเบียบ', 'นำขยะไปทิ้งที่จุดรวบรวม'],
+                    imageUrl: 'https://placehold.co/600x400/4f46e5/ffffff?text=รายงานเวรวันจันทร์+(ม.4/3)',
+                    remarks: 'กวาดและถูห้องเรียนเรียบร้อยตามเวลา'
+                },
+                {
+                    id: 'REP-1002',
+                    timestamp: new Date().toLocaleString('th-TH'),
+                    date: todayStr,
+                    dayOfWeek: 'วันอังคาร',
+                    shift: 'เย็น (15.30 - 16.30 น.)',
+                    completedCount: 7,
+                    totalCount: 8,
+                    studentStatuses: DUTY_ROSTER['วันอังคาร'].map((name, i) => ({ name, status: i === 0 ? 'ลา/ติดภารกิจ' : 'ทำเวรเรียบร้อย' })),
+                    areas: ['กวาดพื้น/ถูพื้นห้องเรียน', 'จัดโต๊ะเก้าอี้ให้เป็นระเบียบ', 'นำขยะไปทิ้งที่จุดรวบรวม'],
+                    imageUrl: 'https://placehold.co/600x400/06b6d4/ffffff?text=รายงานเวรวันอังคาร+(ม.4/3)',
+                    remarks: 'กายสิทธิ์ ทองเพชร ติดซ้อมกีฬาโรงเรียน'
+                }
+            ];
+        }
+
+        function applyFilters() {
+            const dayVal = document.getElementById('filterDay').value;
+            const shiftVal = document.getElementById('filterShift').value;
+            const studentVal = document.getElementById('filterStudent').value.trim().toLowerCase();
+
+            if (!dataTableInstance) return;
+
+            dataTableInstance.column(2).search(dayVal);
+            dataTableInstance.column(3).search(shiftVal);
+            dataTableInstance.search(studentVal).draw();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterDay').value = '';
+            document.getElementById('filterShift').value = '';
+            document.getElementById('filterStudent').value = '';
+
+            if (dataTableInstance) {
+                dataTableInstance.search('').columns().search('').draw();
+            }
+        }
+
+        // Image compression before converting to Base64 to avoid GAS payload limit
+        function previewAndCompressImage(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 1024;
+                        const MAX_HEIGHT = 1024;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        selectedBase64Image = canvas.toDataURL('image/jpeg', 0.8);
+                        document.getElementById('img-preview').src = selectedBase64Image;
+                        document.getElementById('image-preview-container').classList.remove('d-none');
+                    };
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function clearImagePreview() {
+            selectedBase64Image = null;
+            document.getElementById('dutyPhotoInput').value = '';
+            document.getElementById('img-preview').src = '';
+            document.getElementById('image-preview-container').classList.add('d-none');
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const date = document.getElementById('reportDate').value;
+            const dayOfWeek = document.getElementById('reportDayOfWeek').value;
+            const shift = document.getElementById('reportShift').value;
+            const remarks = document.getElementById('reportRemarks').value.trim();
+
+            const studentStatuses = [];
+            let completedCount = 0;
+            const statusSelects = document.querySelectorAll('.student-status-select');
+
+            statusSelects.forEach(select => {
+                const name = select.getAttribute('data-student');
+                const status = select.value;
+                if (status === 'ทำเวรเรียบร้อย') completedCount++;
+                studentStatuses.push({ name, status });
+            });
+
+            const checkedAreas = [];
+            document.querySelectorAll('.area-checkbox:checked').forEach(cb => {
+                checkedAreas.push(cb.value);
+            });
+
+            if (checkedAreas.length === 0) {
+                Swal.fire('แจ้งเตือน', 'กรุณาเลือกจุดทำความสะอาดอย่างน้อย 1 จุด', 'warning');
+                return;
+            }
+
+            if (!selectedBase64Image) {
+                Swal.fire('แจ้งเตือน', 'กรุณาอัปโหลดรูปถ่ายหลักฐานการทำเวร', 'warning');
+                return;
+            }
+
+            Swal.fire({
+                title: 'กำลังบันทึกข้อมูล...',
+                text: 'กำลังบันทึกลง Google Sheets และอัปโหลดรูปภาพลง Google Drive',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            const payload = {
+                date: date,
+                dayOfWeek: dayOfWeek,
+                shift: shift,
+                studentStatuses: studentStatuses,
+                completedCount: completedCount,
+                totalCount: studentStatuses.length,
+                areas: checkedAreas,
+                imageData: selectedBase64Image,
+                remarks: remarks || '-'
+            };
+
+            // GAS Server Integration
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withSuccessHandler((res) => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'บันทึกสำเร็จ!',
+                            text: res.message || 'บันทึกรายงานลง Google Sheet และ Drive เรียบร้อยแล้ว',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        resetDutyForm();
+                        loadInitialData();
+                        switchTab('dashboard');
+                    })
+                    .withFailureHandler((err) => {
+                        Swal.fire('เกิดข้อผิดพลาด', err.toString(), 'error');
+                    })
+                    .saveDutyReport(payload);
+            } else {
+                // Local fallback mode
+                const newReport = {
+                    id: 'REP-' + Date.now(),
+                    timestamp: new Date().toLocaleString('th-TH'),
+                    ...payload,
+                    imageUrl: selectedBase64Image
+                };
+                dutyReports.unshift(newReport);
+                localStorage.setItem('lomsak_duty_reports', JSON.stringify(dutyReports));
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'บันทึกข้อมูลสำเร็จ!',
+                    text: 'บันทึกในระบบเรียบร้อยแล้ว',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                resetDutyForm();
+                updateDashboardStats();
+                refreshDataTable();
+                switchTab('dashboard');
+            }
+        }
+
+        function resetDutyForm() {
+            document.getElementById('dutyReportForm').reset();
+            clearImagePreview();
+            setupFormDefaults();
+        }
+
+        function formatDriveImageUrl(url) {
+            if (!url) return 'https://placehold.co/600x400/e2e8f0/475569?text=ไม่มีรูปภาพ';
+            
+            if (url.startsWith('data:image/') || url.startsWith('blob:') || url.includes('placehold.co')) {
+                return url;
+            }
+
+            let fileId = '';
+            const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            const matchId = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            
+            if (matchD && matchD[1]) {
+                fileId = matchD[1];
+            } else if (matchId && matchId[1]) {
+                fileId = matchId[1];
+            }
+
+            if (fileId) {
+                return `https://lh3.googleusercontent.com/d/${fileId}`;
+            }
+
+            return url;
+        }
+
+        function viewPhoto(reportId) {
+            const report = dutyReports.find(r => r.id === reportId);
+            if (!report) return;
+
+            const displayUrl = formatDriveImageUrl(report.imageUrl);
+            const rawUrl = report.imageUrl || '';
+
+            document.getElementById('photoModalTitle').innerText = `หลักฐานการทำเวร - ${report.dayOfWeek} (${report.date})`;
+            
+            const imgEl = document.getElementById('modalPhotoImg');
+            imgEl.src = displayUrl;
+            
+            const driveBtn = document.getElementById('modalDriveLink');
+            if (rawUrl.includes('drive.google.com') || rawUrl.includes('docs.google.com')) {
+                driveBtn.href = rawUrl;
+                driveBtn.classList.remove('d-none');
+            } else {
+                driveBtn.classList.add('d-none');
+            }
+
+            const areaText = Array.isArray(report.areas) ? report.areas.join(', ') : report.areas;
+            document.getElementById('modalPhotoDetails').innerHTML = `
+                <div><strong>ช่วงเวลา:</strong> ${report.shift}</div>
+                <div><strong>งานที่ทำ:</strong> ${areaText}</div>
+                <div><strong>หมายเหตุ:</strong> ${report.remarks || '-'}</div>
+            `;
+
+            const modal = new bootstrap.Modal(document.getElementById('photoModal'));
+            modal.show();
+        }
+
+        function deleteReport(reportId) {
+            Swal.fire({
+                title: 'ยืนยันการลบรายงาน?',
+                text: "ข้อมูลนี้จะถูกลบออกจากระบบและ Google Sheet",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'ลบรายการ',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (typeof google !== 'undefined' && google.script && google.script.run) {
+                        Swal.showLoading();
+                        google.script.run
+                            .withSuccessHandler((res) => {
+                                Swal.fire('ลบเรียบร้อย!', 'ลบรายการสำเร็จแล้ว', 'success');
+                                loadInitialData();
+                            })
+                            .withFailureHandler((err) => {
+                                Swal.fire('เกิดข้อผิดพลาด', err.toString(), 'error');
+                            })
+                            .deleteDutyReport(reportId);
+                    } else {
+                        dutyReports = dutyReports.filter(r => r.id !== reportId);
+                        localStorage.setItem('lomsak_duty_reports', JSON.stringify(dutyReports));
+                        refreshDataTable();
+                        updateDashboardStats();
+                        Swal.fire('ลบเรียบร้อย!', 'ลบรายการสำเร็จแล้ว', 'success');
+                    }
+                }
+            });
+        }
+
+        function renderRosterCards() {
+            const daysKey = [
+                { key: "วันจันทร์", target: "roster-list-mon" },
+                { key: "วันอังคาร", target: "roster-list-tue" },
+                { key: "วันพุธ", target: "roster-list-wed" },
+                { key: "วันพฤหัสบดี", target: "roster-list-thu" },
+                { key: "วันศุกร์", target: "roster-list-fri" }
+            ];
+
+            daysKey.forEach(item => {
+                const container = document.getElementById(item.target);
+                const students = DUTY_ROSTER[item.key] || [];
+                
+                let html = '';
+                students.forEach((studentName, i) => {
+                    html += `
+                        <div class="col-12 col-md-6 col-lg-3">
+                            <div class="card-modern p-3 d-flex align-items-center gap-3 border-start border-4 border-primary">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:38px; height:38px; flex-shrink:0;">
+                                    ${i + 1}
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-dark" style="font-size:0.95rem;">${studentName}</h6>
+                                    <small class="text-muted">นักเรียน ม.4/3</small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            });
+        }
+
+        function exportToCSV() {
+            if (dutyReports.length === 0) {
+                Swal.fire('ไม่มีข้อมูล', 'ไม่มีรายงานสำหรับการส่งออก', 'info');
+                return;
+            }
+
+            let csv = '\uFEFF';
+            csv += 'รหัส,วันที่,ประจำวัน,ช่วงเวลา,จำนวนคนเรียบร้อย,รวมนักเรียนทั้งหมด,จุดทำความสะอาด,หมายเหตุ\n';
+
+            dutyReports.forEach(r => {
+                const areaText = Array.isArray(r.areas) ? r.areas.join(';') : r.areas;
+                csv += `"${r.id}","${r.date}","${r.dayOfWeek}","${r.shift}","${r.completedCount}","${r.totalCount}","${areaText}","${r.remarks || ''}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Duty_Report_Class4-3_${getLocalDateString()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function syncData() {
+            const icon = document.getElementById('sync-icon');
+            icon.classList.add('fa-spin');
+            loadInitialData();
+            setTimeout(() => {
+                icon.classList.remove('fa-spin');
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'ซิงค์ข้อมูลล่าสุดเรียบร้อย',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }, 600);
+        }
+    </script>
+</body>
+</html>
