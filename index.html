@@ -2,1555 +2,1251 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ระบบรายงานการทำเวรประจำวัน ม.4/3 โรงเรียนหล่มสักวิทยาคม</title>
-    
-    <!-- Google Fonts (Prompt & Inter) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กิจกรรมสัปดาห์วิทยาศาสตร์ (การแข่งขันด้านเทคโนโลยี) - โรงเรียนหล่มสักวิทยาคม</title>
+
+    <!-- Google Fonts: Kanit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    
     <!-- FontAwesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- DataTables CSS Bootstrap 5 -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    <!-- SweetAlert2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous">
+    
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" crossorigin="anonymous">
+    
+    <!-- DataTables Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" crossorigin="anonymous">
 
     <style>
         :root {
             --primary-color: #4f46e5;
             --primary-hover: #4338ca;
             --secondary-color: #06b6d4;
-            --accent-color: #8b5cf6;
-            --bg-light: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --sidebar-width: 260px;
+            --dark-bg: #0f172a;
+            --card-border: #e2e8f0;
+            --body-bg: #f8fafc;
+            --text-dark: #1e293b;
         }
 
         body {
-            font-family: 'Prompt', 'Inter', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-main);
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Sidebar Styling */
-        .sidebar {
-            width: var(--sidebar-width);
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
-            color: #ffffff;
-            z-index: 1040;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 4px 0 15px rgba(0,0,0,0.05);
-        }
-
-        .sidebar .brand {
-            padding: 1.5rem 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .sidebar .brand-logo {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            color: #fff;
-            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.4);
-        }
-
-        .sidebar-menu {
-            padding: 1.25rem 0.75rem;
-            list-style: none;
-            margin: 0;
-        }
-
-        .sidebar-menu .nav-item {
-            margin-bottom: 0.35rem;
-        }
-
-        .sidebar-menu .nav-link {
-            color: #c7d2fe;
-            padding: 0.75rem 1rem;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .sidebar-menu .nav-link:hover,
-        .sidebar-menu .nav-link.active {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(5px);
-        }
-
-        .sidebar-menu .nav-link.active {
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
-        }
-
-        /* Main Content Layout */
-        .main-content {
-            margin-left: var(--sidebar-width);
+            font-family: 'Kanit', sans-serif;
+            background-color: var(--body-bg);
+            color: var(--text-dark);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar-custom {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #312e81 0%, #4f46e5 50%, #0284c7 100%);
+            color: white;
+            padding: 2.5rem 1rem;
+            border-radius: 0 0 2rem 2rem;
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .glass-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.03);
             transition: all 0.3s ease;
-            padding-bottom: 3rem;
         }
 
-        /* Navbar Header */
-        .top-navbar {
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 0.85rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 1030;
+        .glass-card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
         }
 
-        /* Modern Cards */
-        .card-modern {
-            background: var(--card-bg);
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            transition: all 0.3s ease;
         }
 
-        .card-modern:hover {
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06);
+        .status-dot.online {
+            background-color: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+            animation: pulse-green 2s infinite;
         }
 
-        .stat-card {
-            padding: 1.25rem;
+        .status-dot.offline {
+            background-color: #3b82f6;
+            box-shadow: 0 0 6px #3b82f6;
+        }
+
+        .status-dot.error {
+            background-color: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        .category-card {
+            border-left: 5px solid var(--primary-color);
             position: relative;
             overflow: hidden;
         }
 
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.35rem;
+        .category-card.full {
+            border-left-color: #ef4444;
+            background-color: #fef2f2;
         }
 
-        /* Student Checklist Card */
-        .student-item-card {
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 0.85rem 1rem;
-            margin-bottom: 0.65rem;
-            background-color: #fff;
-            transition: all 0.2s ease;
+        .badge-seats {
+            font-size: 0.85rem;
+            padding: 0.4em 0.8em;
+            border-radius: 20px;
         }
 
-        .student-item-card:hover {
+        .form-control, .form-select {
+            border-radius: 0.75rem;
+            padding: 0.65rem 1rem;
+            border: 1px solid #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
-            background-color: #f8fafc;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
         }
 
-        /* Dropzone Upload */
-        .upload-dropzone {
-            border: 2px dashed #cbd5e1;
-            border-radius: 14px;
-            padding: 1.75rem 1rem;
-            text-align: center;
-            background: #f8fafc;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .section-header {
+            position: relative;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
         }
 
-        .upload-dropzone:hover {
-            border-color: var(--primary-color);
-            background: #f1f5f9;
-        }
-
-        .img-preview-box {
-            max-height: 220px;
-            border-radius: 12px;
-            object-fit: cover;
-            width: 100%;
-        }
-
-        /* Overlay Backdrop for Mobile */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
+        .section-header::after {
+            content: '';
+            position: absolute;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(4px);
-            z-index: 1035;
+            bottom: 0;
+            width: 50px;
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 2px;
         }
 
-        .cursor-pointer {
-            cursor: pointer;
+        .receipt-card {
+            background: #fff;
+            border: 2px dashed #cbd5e1;
+            border-radius: 1rem;
+            padding: 1.5rem;
         }
 
-        /* Responsive Breakpoints */
-        @media (max-width: 991.98px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.show {
-                transform: translateX(0);
-            }
-            .sidebar-overlay.show {
-                display: block;
-            }
-            .main-content {
-                margin-left: 0;
-            }
+        .footer {
+            margin-top: auto;
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 1.5rem 0;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printableArea, #printableArea * { visibility: visible; }
+            #printableArea { position: absolute; left: 0; top: 0; width: 100%; }
+            .modal-footer, .btn-close { display: none !important; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Mobile Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="brand">
-            <div class="brand-logo">
-                <i class="fa-solid fa-broom"></i>
-            </div>
-            <div>
-                <h6 class="mb-0 fw-bold text-white">เวรประจำวัน ม.4/3</h6>
-                <small class="text-indigo-200 opacity-75" style="font-size: 0.72rem;">โรงเรียนหล่มสักวิทยาคม</small>
-            </div>
-        </div>
-
-        <ul class="sidebar-menu">
-            <li class="nav-item">
-                <a class="nav-link active" onclick="switchTab('dashboard')">
-                    <i class="fa-solid fa-chart-pie me-1"></i>
-                    <span>แดชบอร์ดสรุปผล</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" onclick="switchTab('report-duty')">
-                    <i class="fa-solid fa-pen-to-square me-1"></i>
-                    <span>บันทึกการทำเวร</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" onclick="switchTab('history')">
-                    <i class="fa-solid fa-list-check me-1"></i>
-                    <span>ประวัติ & รายงาน</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" onclick="switchTab('roster')">
-                    <i class="fa-solid fa-users me-1"></i>
-                    <span>ตารางเวรประจำวัน</span>
-                </a>
-            </li>
-            
-        </ul>
-    </aside>
-
-    <!-- Main Content Layout -->
-    <div class="main-content">
-        <!-- Top Navbar -->
-        <header class="top-navbar d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-light d-lg-none border" type="button" onclick="toggleSidebar()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-3" href="#">
+                <div class="bg-white p-1 rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                    <i class="fa-solid fa-laptop-code text-primary fs-4"></i>
+                </div>
                 <div>
-                    <h5 class="fw-bold mb-0 text-dark" id="page-title">แดชบอร์ดสรุปผล</h5>
-                    <small class="text-muted d-none d-sm-inline-block">ระบบติดตามและบันทึกรายงานการทำเวรทำความสะอาดห้องเรียน</small>
+                    <div class="fw-bold fs-5 leading-tight">กิจกรรมสัปดาห์วิทยาศาสตร์ (การแข่งขันด้านเทคโนโลยี)</div>
+                    <div class="text-white-50 fs-7" style="font-size: 0.75rem;">โรงเรียนหล่มสักวิทยาคม</div>
                 </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-2 mt-3 mt-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-white active" id="tab-dashboard-btn" href="#dashboard" onclick="switchTab('dashboard')">
+                            <i class="fa-solid fa-chart-pie me-1"></i> โควตาการแข่งขัน
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" id="tab-register-btn" href="#register" onclick="switchTab('register')">
+                            <i class="fa-solid fa-pen-to-square me-1"></i> ลงทะเบียนสมัคร
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" id="tab-status-btn" href="#status" onclick="switchTab('status')">
+                            <i class="fa-solid fa-list-check me-1"></i> ตรวจสอบรายชื่อ
+                        </a>
+                    </li>
+                </ul>
             </div>
+        </div>
+    </nav>
 
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-light text-dark border px-3 py-2 d-none d-md-inline-block">
-                    <i class="fa-regular fa-calendar-check text-primary me-1"></i>
-                    <span id="current-date-text">กำลังโหลดวันที่...</span>
-                </span>
-                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="syncData()">
-                    <i class="fa-solid fa-rotate me-1" id="sync-icon"></i> รีเฟรช
-                </button>
-            </div>
-        </header>
-
-        <!-- Main View Area -->
-        <main class="container-fluid p-3 p-md-4">
-
-            <!-- SECTION 1: DASHBOARD -->
-            <section id="section-dashboard" class="tab-content-section">
-                <!-- Summary Metrics Cards -->
-                <div class="row g-3 mb-4">
-                    <div class="col-6 col-lg-3">
-                        <div class="card-modern stat-card">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <span class="text-muted small fw-medium">เวรประจำวันนี้</span>
-                                    <h3 class="fw-bold mb-0 mt-1 text-dark" id="stat-today-total">0</h3>
-                                    <small class="text-primary fw-medium" id="stat-today-dayname">วัน...</small>
-                                </div>
-                                <div class="stat-icon" style="background:#e0e7ff; color:#4338ca;">
-                                    <i class="fa-solid fa-user-group"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-3">
-                        <div class="card-modern stat-card">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <span class="text-muted small fw-medium">ทำเวรเรียบร้อย</span>
-                                    <h3 class="fw-bold mb-0 mt-1 text-success" id="stat-today-completed">0</h3>
-                                    <small class="text-success" id="stat-today-pct">0% ของวันนี้</small>
-                                </div>
-                                <div class="stat-icon" style="background:#d1fae5; color:#047857;">
-                                    <i class="fa-solid fa-circle-check"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-3">
-                        <div class="card-modern stat-card">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <span class="text-muted small fw-medium">ขาด/ไม่มาทำเวร</span>
-                                    <h3 class="fw-bold mb-0 mt-1 text-danger" id="stat-today-absent">0</h3>
-                                    <small class="text-danger">บันทึกวันนี้</small>
-                                </div>
-                                <div class="stat-icon" style="background:#fee2e2; color:#b91c1c;">
-                                    <i class="fa-solid fa-circle-xmark"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-3">
-                        <div class="card-modern stat-card">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <span class="text-muted small fw-medium">รวมรายงานทั้งหมด</span>
-                                    <h3 class="fw-bold mb-0 mt-1 text-dark" id="stat-total-reports">0</h3>
-                                    <small class="text-muted">รายการทั้งหมด</small>
-                                </div>
-                                <div class="stat-icon" style="background:#f3e8ff; color:#6b21a8;">
-                                    <i class="fa-solid fa-file-lines"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="hero-section text-center">
+        <div class="container">
+            <span class="badge bg-white text-primary px-3 py-2 rounded-pill fw-semibold mb-2 shadow-sm">
+                <i class="fa-solid fa-trophy me-1 text-warning"></i> งานแข่งขันทักษะทางวิชาการคอมพิวเตอร์
+            </span>
+            <h1 class="fw-bold display-6 mb-2">กิจกรรมสัปดาห์วิทยาศาสตร์ (การแข่งขันด้านเทคโนโลยี)</h1>
+            <p class="lead opacity-90 mb-2">กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี โรงเรียนหล่มสักวิทยาคม</p>
+            
+            <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mt-3">
+                <div class="d-inline-flex align-items-center gap-2 bg-white text-dark px-3 py-2 rounded-pill shadow-sm border">
+                    <i class="fa-solid fa-calendar-days text-primary"></i>
+                    <span class="small fw-semibold text-dark">กำหนดการรับสมัคร: 4 - 17 สิงหาคม พ.ศ. 2569</span>
+                    <span id="regStatusBadge" class="badge bg-warning text-dark rounded-pill ms-1">กำลังตรวจสอบ...</span>
                 </div>
-
-                <!-- Charts & Quick Action Section -->
-                <div class="row g-3 mb-4">
-                    <div class="col-12 col-lg-8">
-                        <div class="card-modern p-4 h-100">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-chart-column text-primary me-2"></i>สถิติการปฏิบัติหน้าที่แยกตามวัน</h6>
-                                <span class="badge bg-light text-secondary border">ภาพรวมสัปดาห์</span>
-                            </div>
-                            <div style="position: relative; height:280px;">
-                                <canvas id="chartWeeklyStats"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-4">
-                        <div class="card-modern p-4 h-100 d-flex flex-column justify-content-between">
-                            <div>
-                                <h6 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-bolt text-warning me-2"></i>เมนูดำเนินการด่วน</h6>
-                                <div class="d-grid gap-2">
-                                    <button class="btn btn-primary btn-lg rounded-3 text-start px-3 py-2" onclick="switchTab('report-duty')">
-                                        <i class="fa-solid fa-circle-plus me-2"></i> บันทึกเวรประจำวันนี้
-                                    </button>
-                                    <button class="btn btn-outline-dark rounded-3 text-start px-3 py-2" onclick="switchTab('roster')">
-                                        <i class="fa-solid fa-calendar-days me-2"></i> ตรวจสอบตารางรายชื่อเวร
-                                    </button>
-                                    <button class="btn btn-outline-secondary rounded-3 text-start px-3 py-2" onclick="switchTab('history')">
-                                        <i class="fa-solid fa-magnifying-glass me-2"></i> ค้นหาและดูประวัติย้อนหลัง
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="mt-4 p-3 rounded-3" style="background: #eef2ff; border: 1px solid #c7d2fe;">
-                                <div class="d-flex align-items-center gap-2 text-primary fw-semibold mb-1">
-                                    <i class="fa-solid fa-bullhorn"></i> แจ้งเตือนข้อปฏิบัติ
-                                </div>
-                                <small class="text-secondary" style="font-size: 0.82rem;">
-                                    เวรเช้าต้องทำความสะอาดให้เสร็จก่อนเวลา 07.45 น. และเวรเย็นทำความสะอาดหลังเลิกเรียนพร้อมถ่ายรูปส่งรายงานครับ
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Submissions Table -->
-                <div class="card-modern p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-clock-rotate-left text-info me-2"></i>รายการบันทึกล่าสุด</h6>
-                        <a onclick="switchTab('history')" class="text-decoration-none small fw-semibold cursor-pointer">ดูทั้งหมด <i class="fa-solid fa-arrow-right"></i></a>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" id="recent-table">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>วันที่/เวลา</th>
-                                    <th>วัน</th>
-                                    <th>ช่วงเวลา</th>
-                                    <th>บริเวณทำความสะอาด</th>
-                                    <th>สถานะสรุป</th>
-                                    <th>หลักฐานรูปถ่าย</th>
-                                    <th>การจัดการ</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recent-table-body">
-                                <!-- Dynamic rows -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 2: REPORT DUTY FORM -->
-            <section id="section-report-duty" class="tab-content-section d-none">
-                <div class="row justify-content-center">
-                    <div class="col-12 col-xl-10">
-                        <div class="card-modern p-4">
-                            <div class="border-bottom pb-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                <div>
-                                    <h5 class="fw-bold text-dark mb-1"><i class="fa-solid fa-file-pen text-primary me-2"></i>แบบฟอร์มบันทึกการทำเวรประจำวัน ม.4/3</h5>
-                                    <p class="text-muted small mb-0">กรุณาเลือกวัน ตรวจสอบรายชื่อ เช็คสถานะ และแนบรูปถ่ายการทำความสะอาด</p>
-                                </div>
-                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2">
-                                    <i class="fa-solid fa-shield-halved me-1"></i> Lomsakwittayakom Class 4/3
-                                </span>
-                            </div>
-
-                            <form id="dutyReportForm" onsubmit="handleFormSubmit(event)">
-                                <div class="row g-3 mb-4">
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-semibold">วันที่บันทึก <span class="text-danger">*</span></label>
-                                        <input type="date" class="form-control form-control-lg fs-6" id="reportDate" required onchange="onDatePickerChange()">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-semibold">ประจำวัน <span class="text-danger">*</span></label>
-                                        <select class="form-select form-select-lg fs-6" id="reportDayOfWeek" required onchange="onDayOfWeekSelectChange()">
-                                            <option value="วันจันทร์">วันจันทร์</option>
-                                            <option value="วันอังคาร">วันอังคาร</option>
-                                            <option value="วันพุธ">วันพุธ</option>
-                                            <option value="วันพฤหัสบดี">วันพฤหัสบดี</option>
-                                            <option value="วันศุกร์">วันศุกร์</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-semibold">ช่วงเวลาทำเวร <span class="text-danger">*</span></label>
-                                        <select class="form-select form-select-lg fs-6" id="reportShift" required>
-                                            <option value="เช้า (07.00 - 07.45 น.)">เช้า (07.00 - 07.45 น.)</option>
-                                            <option value="เย็น (15.30 - 16.30 น.)">เย็น (15.30 - 16.30 น.)</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- Dynamic Students Attendance List -->
-                                <div class="mb-4">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <label class="form-label fw-bold mb-0">
-                                            <i class="fa-solid fa-clipboard-user text-indigo me-1"></i> เช็คชื่อนักเรียนผู้รับผิดชอบเวร (<span id="day-student-count">0</span> คน)
-                                        </label>
-                                        <div class="btn-group btn-group-sm">
-                                            <button type="button" class="btn btn-outline-success" onclick="markAllStatus('ทำเวรเรียบร้อย')"><i class="fa-solid fa-check"></i> เรียบร้อยทั้งหมด</button>
-                                        </div>
-                                    </div>
-
-                                    <div id="students-checklist-container" class="p-3 bg-light rounded-3 border">
-                                        <!-- Dynamic student checklist items rendered here -->
-                                    </div>
-                                </div>
-
-                                <!-- Cleaning Areas Checklist -->
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">จุดการทำความสะอาดที่ดำเนินการ <span class="text-danger">*</span></label>
-                                    <div class="row g-2">
-                                        <div class="col-6 col-md-4">
-                                            <div class="form-check card p-2 px-3 border mb-0">
-                                                <input class="form-check-input area-checkbox" type="checkbox" value="กวาดพื้น/ถูพื้นห้องเรียน" id="area1" checked>
-                                                <label class="form-check-label small fw-medium cursor-pointer" for="area1">กวาดพื้น/ถูพื้นห้องเรียน</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-md-4">
-                                            <div class="form-check card p-2 px-3 border mb-0">
-                                                <input class="form-check-input area-checkbox" type="checkbox" value="ลบกระดาน/ทำความสะอาดหน้าห้อง" id="area2" checked>
-                                                <label class="form-check-label small fw-medium cursor-pointer" for="area2">ลบกระดาน/เช็ดหน้าห้อง</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-md-4">
-                                            <div class="form-check card p-2 px-3 border mb-0">
-                                                <input class="form-check-input area-checkbox" type="checkbox" value="จัดโต๊ะเก้าอี้ให้เป็นระเบียบ" id="area3" checked>
-                                                <label class="form-check-label small fw-medium cursor-pointer" for="area3">จัดโต๊ะเก้าอี้เรียบร้อย</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-md-4">
-                                            <div class="form-check card p-2 px-3 border mb-0">
-                                                <input class="form-check-input area-checkbox" type="checkbox" value="นำขยะไปทิ้งที่จุดรวบรวม" id="area4" checked>
-                                                <label class="form-check-label small fw-medium cursor-pointer" for="area4">นำขยะไปทิ้งขยะ</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-md-4">
-                                            <div class="form-check card p-2 px-3 border mb-0">
-                                                <input class="form-check-input area-checkbox" type="checkbox" value="ทำความสะอาดระเบียง/หลังห้อง" id="area5">
-                                                <label class="form-check-label small fw-medium cursor-pointer" for="area5">ระเบียง/หลังห้องเรียน</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-md-4">
-                                            <div class="form-check card p-2 px-3 border mb-0">
-                                                <input class="form-check-input area-checkbox" type="checkbox" value="ปิดไฟ/ปิดพัดลม/ล็อคประตู" id="area6">
-                                                <label class="form-check-label small fw-medium cursor-pointer" for="area6">ปิดไฟ-พัดลม/ปิดประตู</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Image Upload Integration -->
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">อัปโหลดภาพถ่ายหลักฐานการทำเวร (Google Drive) <span class="text-danger">*</span></label>
-                                    <div class="upload-dropzone" onclick="document.getElementById('dutyPhotoInput').click()">
-                                        <i class="fa-solid fa-cloud-arrow-up text-primary display-6 mb-2"></i>
-                                        <h6 class="fw-bold mb-1">คลิกเพื่อเลือกรูปถ่าย หรือ ถ่ายภาพด้วยกล้อง</h6>
-                                        <small class="text-muted">รองรับไฟล์ JPG, PNG (ระบบจะอัปโหลดและบีบอัดภาพก่อนบันทึกลง Google Drive)</small>
-                                        <input type="file" id="dutyPhotoInput" accept="image/*" class="d-none" onchange="previewAndCompressImage(this)">
-                                    </div>
-                                    <div id="image-preview-container" class="mt-3 text-center d-none">
-                                        <div class="position-relative d-inline-block" style="max-width: 320px;">
-                                            <img id="img-preview" src="" class="img-preview-box border shadow-sm">
-                                            <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-2" onclick="clearImagePreview()">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Remarks -->
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">หมายเหตุ / ปัญหาที่พบ (ถ้ามี)</label>
-                                    <textarea class="form-control" id="reportRemarks" rows="2" placeholder="เช่น อุปกรณ์ทำความสะอาดชำรุด, นักเรียนลาป่วย..."></textarea>
-                                </div>
-
-                                <!-- Action Buttons -->
-                                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
-                                    <button type="button" class="btn btn-light px-4 border" onclick="resetDutyForm()">ล้างข้อมูล</button>
-                                    <button type="submit" class="btn btn-primary px-5 py-2 fw-semibold" id="btn-submit-report">
-                                        <i class="fa-solid fa-paper-plane me-2"></i>บันทึกรายงานการทำเวร
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: HISTORY & DATA TABLES -->
-            <section id="section-history" class="tab-content-section d-none">
-                <div class="card-modern p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-                        <div>
-                            <h5 class="fw-bold text-dark mb-1"><i class="fa-solid fa-table-list text-primary me-2"></i>ประวัติการบันทึกรายงานการทำเวร</h5>
-                            <small class="text-muted">ค้นหา กรอง และส่งออกข้อมูลการทำเวรของนักเรียนชั้น ม.4/3</small>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-success btn-sm" onclick="exportToCSV()">
-                                <i class="fa-solid fa-file-excel me-1"></i> Export Excel/CSV
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Filter Options -->
-                    <div class="row g-2 mb-4 p-3 bg-light rounded-3 border">
-                        <div class="col-md-3">
-                            <label class="small text-muted fw-semibold">กรองตามวัน:</label>
-                            <select class="form-select form-select-sm" id="filterDay" onchange="applyFilters()">
-                                <option value="">-- ทุกวันประจำสัปดาห์ --</option>
-                                <option value="วันจันทร์">วันจันทร์</option>
-                                <option value="วันอังคาร">วันอังคาร</option>
-                                <option value="วันพุธ">วันพุธ</option>
-                                <option value="วันพฤหัสบดี">วันพฤหัสบดี</option>
-                                <option value="วันศุกร์">วันศุกร์</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small text-muted fw-semibold">กรองตามช่วงเวลา:</label>
-                            <select class="form-select form-select-sm" id="filterShift" onchange="applyFilters()">
-                                <option value="">-- ทุกช่วงเวลา --</option>
-                                <option value="เช้า">ช่วงเช้า</option>
-                                <option value="เย็น">ช่วงเย็น</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="small text-muted fw-semibold">ค้นหารายชื่อนักเรียน / ข้อความ:</label>
-                            <input type="text" class="form-control form-control-sm" id="filterStudent" placeholder="พิมพ์ชื่อนักเรียน..." onkeyup="applyFilters()">
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button class="btn btn-sm btn-secondary w-100" onclick="resetFilters()">ล้างการกรอง</button>
-                        </div>
-                    </div>
-
-                    <!-- DataTable -->
-                    <div class="table-responsive">
-                        <table id="historyDataTable" class="table table-striped table-hover align-middle w-100">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>#</th>
-                                    <th>วันที่</th>
-                                    <th>ประจำวัน</th>
-                                    <th>ช่วงเวลา</th>
-                                    <th>สรุปผลการเช็คชื่อ</th>
-                                    <th>งานที่ปฏิบัติ</th>
-                                    <th>ภาพหลักฐาน</th>
-                                    <th>หมายเหตุ</th>
-                                    <th>จัดการ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Data rows injected by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 4: DUTY ROSTER SCHEDULE -->
-            <section id="section-roster" class="tab-content-section d-none">
-                <div class="card-modern p-4 mb-4">
-                    <div class="text-center max-w-2xl mx-auto mb-4">
-                        <span class="badge px-3 py-2 rounded-pill fw-semibold mb-2" style="background:#e0e7ff; color:#3730a3;">
-                            <i class="fa-solid fa-users-rectangle me-1"></i> รายชื่อเวรทำความสะอาดประจำวัน
-                        </span>
-                        <h4 class="fw-bold text-dark">นักเรียนชั้นมัธยมศึกษาปีที่ 4/3 โรงเรียนหล่มสักวิทยาคม</h4>
-                        <p class="text-muted small">แบ่งตามวันจันทร์ - วันศุกร์ ปฏิบัติหน้าที่รักษาความสะอาดห้องเรียน</p>
-                    </div>
-
-                    <!-- Day Tabs -->
-                    <ul class="nav nav-pills nav-fill mb-4 gap-2 border-bottom pb-3" id="rosterTabs" role="tablist">
-                        <li class="nav-item">
-                            <button class="nav-link active fw-semibold" data-bs-toggle="tab" data-bs-target="#roster-mon">วันจันทร์</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#roster-tue">วันอังคาร</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#roster-wed">วันพุธ</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#roster-thu">วันพฤหัสบดี</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#roster-fri">วันศุกร์</button>
-                        </li>
-                    </ul>
-
-                    <!-- Tab Content -->
-                    <div class="tab-content" id="rosterTabContent">
-                        <div class="tab-pane fade show active" id="roster-mon">
-                            <div class="row g-3" id="roster-list-mon"></div>
-                        </div>
-                        <div class="tab-pane fade" id="roster-tue">
-                            <div class="row g-3" id="roster-list-tue"></div>
-                        </div>
-                        <div class="tab-pane fade" id="roster-wed">
-                            <div class="row g-3" id="roster-list-wed"></div>
-                        </div>
-                        <div class="tab-pane fade" id="roster-thu">
-                            <div class="row g-3" id="roster-list-thu"></div>
-                        </div>
-                        <div class="tab-pane fade" id="roster-fri">
-                            <div class="row g-3" id="roster-list-fri"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 5: GAS DEPLOYMENT GUIDE -->
-            <section id="section-deployment-guide" class="tab-content-section d-none">
-                <div class="card-modern p-4">
-                    <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-code text-warning me-2"></i>คำแนะนำการติดตั้งและ Deploy บน Google Apps Script</h5>
-                    
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="p-3 bg-light rounded-3 border h-100">
-                                <h6 class="fw-bold text-primary"><i class="fa-solid fa-1 me-2"></i>ขั้นตอนการตั้งค่าใน Google Sheets</h6>
-                                <ol class="small text-muted ps-3 mb-0" style="line-height:1.8;">
-                                    <li>สร้าง Google Sheet ใหม่ แล้วไปที่เมนู <strong>ส่วนขยาย (Extensions)</strong> &gt; <strong>Apps Script</strong></li>
-                                    <li>ลบโค้ดเดิมใน <code>Code.gs</code> แล้วคัดลอกโค้ดจากไฟล์ <code>Code.gs</code> มาวาง</li>
-                                    <li>กดปุ่ม <strong>+ (เพิ่มไฟล์)</strong> เลือก HTML แล้วตั้งชื่อว่า <code>index</code></li>
-                                    <li>นำซอร์สโค้ดในไฟล์นี้ทั้งหมดไปวางในไฟล์ <code>index.html</code></li>
-                                </ol>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="p-3 bg-light rounded-3 border h-100">
-                                <h6 class="fw-bold text-success"><i class="fa-solid fa-2 me-2"></i>ขั้นตอนการ Deploy เป็น Web App</h6>
-                                <ol class="small text-muted ps-3 mb-0" style="line-height:1.8;">
-                                    <li>กดปุ่ม <strong>การทำให้ใช้งานได้ (Deploy)</strong> &gt; <strong>การทำให้ใช้งานได้ใหม่ (New Deployment)</strong></li>
-                                    <li>เลือกประเภทเป็น <strong>เว็บแอป (Web App)</strong></li>
-                                    <li>ตั้งค่า <i>Execute as:</i> <strong>ฉัน (Me)</strong></li>
-                                    <li>ตั้งค่า <i>Who has access:</i> <strong>ทุกคน (Anyone)</strong></li>
-                                    <li>กด <strong>Deploy</strong> และอนุมัติสิทธิ์ (Grant Access) เพื่อรับ URL ของแอป</li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </main>
-    </div>
-
-    <!-- Photo Preview Modal -->
-    <div class="modal fade" id="photoModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0">
-                <div class="modal-header border-0 pb-0">
-                    <h6 class="modal-title fw-bold" id="photoModalTitle">หลักฐานการทำเวร</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center p-4">
-                    <div class="position-relative mb-3">
-                        <img id="modalPhotoImg" src="" class="img-fluid rounded-3 shadow-sm" style="max-height: 400px; width:100%; object-fit:cover;" onerror="this.onerror=null; this.src='https://placehold.co/600x400/e2e8f0/475569?text=ไม่สามารถโหลดรูปภาพได้';">
-                    </div>
-                    <div id="modalPhotoDetails" class="text-start p-3 bg-light rounded-3 small mb-3"></div>
-                    <a id="modalDriveLink" href="#" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill d-none">
-                        <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> เปิดดูรูปภาพต้นฉบับบน Google Drive
-                    </a>
+                <div class="d-inline-flex align-items-center gap-2 bg-white text-dark px-3 py-2 rounded-pill shadow-sm border" title="สถานะการเชื่อมต่อฐานข้อมูล Google Sheets">
+                    <span id="dbStatusDot" class="status-dot bg-warning"></span>
+                    <span id="dbStatusText" class="small fw-semibold text-dark">ฐานข้อมูล: กำลังเชื่อมต่อ...</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <div class="container mb-5">
+
+        <div id="section-dashboard" class="tab-section">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <div>
+                    <h3 class="section-header mb-1">สถานะโควตาการสมัครทั้งหมด</h3>
+                    <p class="text-muted mb-0">ตรวจสอบจำนวนทีมที่เปิดรับสมัครและสิทธิ์คงเหลือแต่ละรายการ</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="loadQuotaData()">
+                        <i class="fa-solid fa-arrows-rotate me-1"></i> รีเฟรชข้อมูล
+                    </button>
+                    <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="switchTab('register')">
+                        <i class="fa-solid fa-plus me-1"></i> สมัครแข่งขันเลย
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Overview Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="glass-card p-3 d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary fs-3">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">จำนวนที่เปิดรับทั้งหมด</div>
+                            <div class="fs-4 fw-bold" id="total-capacity-count">50 ทีม</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="glass-card p-3 d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success fs-3">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">สมัครแล้วทั้งหมด</div>
+                            <div class="fs-4 fw-bold text-success" id="total-registered-count">0 ทีม</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="glass-card p-3 d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning fs-3">
+                            <i class="fa-solid fa-chair"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">โควตาคงเหลือรวม</div>
+                            <div class="fs-4 fw-bold text-warning" id="total-remaining-count">50 ทีม</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4" id="quota-cards-grid">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <div id="section-register" class="tab-section d-none">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="glass-card p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <h3 class="fw-bold text-primary mb-1">แบบฟอร์มลงทะเบียนเข้าแข่งขัน</h3>
+                            <p class="text-muted">กรอกข้อมูลผู้เข้าแข่งขันให้ครบถ้วนก่อนส่งข้อมูล</p>
+                        </div>
+
+                        <div id="regPeriodNotice" class="alert rounded-4 mb-4 d-none">
+                            <!-- Injected dynamically -->
+                        </div>
+
+                        <form id="registrationForm" onsubmit="handleFormSubmit(event)" class="needs-validation" novalidate>
+                            
+                            <!-- 1. Category Selection -->
+                            <div class="card bg-light border-0 rounded-4 p-3 p-md-4 mb-4">
+                                <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-trophy text-warning me-2"></i>1. เลือกประเภทการแข่งขัน</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">รายการแข่งขัน <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="mainCategorySelect" required onchange="onMainCategoryChange()">
+                                            <option value="" selected disabled>-- กรุณาเลือกรายการแข่งขัน --</option>
+                                            <option value="1">1. การออกแบบสิ่งของเครื่องใช้ด้วยโปรแกรมคอมพิวเตอร์</option>
+                                            <option value="2">2. การสร้างการ์ตูนเรื่องสั้น (Comic Strip)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">ระดับชั้น/กลุ่มการแข่งขัน <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="subCategorySelect" required onchange="checkSubcategoryQuota()">
+                                            <option value="" selected disabled>-- กรุณาเลือกรายการหลักก่อน --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="quotaNotice" class="mt-3 d-none">
+                                    <!-- Dynamic notice -->
+                                </div>
+                            </div>
+
+                            <!-- 2. Student 1 Information -->
+                            <div class="card bg-light border-0 rounded-4 p-3 p-md-4 mb-4">
+                                <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-user-graduate text-success me-2"></i>2. ข้อมูลผู้เข้าแข่งขัน คนที่ 1</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold">คำนำหน้า <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="m1Prefix" required>
+                                            <option value="เด็กชาย">เด็กชาย</option>
+                                            <option value="เด็กหญิง">เด็กหญิง</option>
+                                            <option value="นาย">นาย</option>
+                                            <option value="นางสาว">นางสาว</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label fw-semibold">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="m1Name" placeholder="ชื่อ และ นามสกุล" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">ระดับชั้น/ห้อง <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="m1Class" placeholder="เช่น ม.1/2" required>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold">เบอร์โทรศัพท์นักเรียน <span class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" id="m1Phone" placeholder="08X-XXX-XXXX" pattern="^0[0-9]{8,9}$" maxlength="10" required>
+                                        <div class="invalid-feedback">กรุณากรอกเบอร์โทรศัพท์ 9-10 หลักให้ถูกต้อง</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. Student 2 Information -->
+                            <div class="card bg-light border-0 rounded-4 p-3 p-md-4 mb-4">
+                                <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-user-graduate text-info me-2"></i>3. ข้อมูลผู้เข้าแข่งขัน คนที่ 2</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold">คำนำหน้า <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="m2Prefix" required>
+                                            <option value="เด็กชาย">เด็กชาย</option>
+                                            <option value="เด็กหญิง">เด็กหญิง</option>
+                                            <option value="นาย">นาย</option>
+                                            <option value="นางสาว">นางสาว</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label fw-semibold">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="m2Name" placeholder="ชื่อ และ นามสกุล" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">ระดับชั้น/ห้อง <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="m2Class" placeholder="เช่น ม.1/2" required>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold">เบอร์โทรศัพท์นักเรียน <span class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" id="m2Phone" placeholder="08X-XXX-XXXX" pattern="^0[0-9]{8,9}$" maxlength="10" required>
+                                        <div class="invalid-feedback">กรุณากรอกเบอร์โทรศัพท์ 9-10 หลักให้ถูกต้อง</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-3 mt-4">
+                                <button type="reset" class="btn btn-light px-4 rounded-pill" onclick="resetFormState()">
+                                    <i class="fa-solid fa-rotate-left me-1"></i> ล้างข้อมูล
+                                </button>
+                                <button type="submit" class="btn btn-primary px-5 rounded-pill fw-semibold shadow" id="btnSubmitForm">
+                                    <i class="fa-solid fa-paper-plane me-1"></i> ยืนยันการลงทะเบียน
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-status" class="tab-section d-none">
+            <div class="glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                    <div>
+                        <h3 class="section-header mb-1">รายชื่อทีมที่ลงทะเบียนแข่งขัน</h3>
+                        <p class="text-muted mb-0">ตรวจสอบสถานะ ค้นหารายชื่อ หรือพิมพ์ใบยืนยันการลงทะเบียน</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" id="tableFilterCategory" style="min-width: 220px;" onchange="filterStatusTable()">
+                            <option value="">-- แสดงทุกรายการแข่งขัน --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="teamsTable" class="table table-hover align-middle w-100">
+                        <thead class="table-light">
+                            <tr>
+                                <th>รหัสลงทะเบียน</th>
+                                <th>รายการแข่งขัน</th>
+                                <th>ผู้เข้าแข่งขัน คนที่ 1</th>
+                                <th>ผู้เข้าแข่งขัน คนที่ 2</th>
+                                <th>วันที่สมัคร</th>
+                                <th>สถานะ</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="receiptModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 bg-primary text-white">
+                    <h5 class="modal-title fw-bold" id="receiptModalLabel">
+                        <i class="fa-solid fa-file-invoice me-2"></i>ใบยืนยันการลงทะเบียน
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" id="receiptModalBody">
+                    <!-- Dynamic Receipt Content -->
+                </div>
+                <div class="modal-footer border-0 bg-light">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิด</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4" onclick="printReceipt()">
+                        <i class="fa-solid fa-print me-1"></i> พิมพ์เอกสาร
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer text-center">
+        <div class="container">
+            <p class="mb-1 fw-semibold">กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี โรงเรียนหล่มสักวิทยาคม</p>
+            <p class="small mb-0 opacity-75">ระบบรับสมัครผู้เข้าแข่งขันโปรแกรมคอมพิวเตอร์ &copy; 2026 All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js" crossorigin="anonymous"></script>
 
     <script>
-        // 1. STUDENT ROSTER DATABASE BY DAY (ม.4/3 โรงเรียนหล่มสักวิทยาคม)
-        const DUTY_ROSTER = {
-            "วันจันทร์": [
-                "ธนวัฒน์ อุบลอ่อน",
-                "อัชญา สายทองติ่ง",
-                "เกียรติภัส นิ้วป้อง",
-                "จิรัฐติกาล บุญชื่น",
-                "กฤตเมธ ออดดี",
-                "ดวงกมล สำมะนี",
-                "ภัทรภูมิ จิอู๋",
-                "อัญจิรา แก่นชา"
-            ],
-            "วันอังคาร": [
-                "กายสิทธิ์ ทองเพชร",
-                "วรกานต์ ฉันเฉย",
-                "อิทธิพัทธ์ ปั่นเจริญ",
-                "ชิดชนก คำพิมา",
-                "รุ่งนภา บุตลา",
-                "ชมพูนุช ป้องคำ",
-                "ชลภัสสรน์ หนองคาย",
-                "พิมพ์ลักษณ์ อ่อนศิริ"
-            ],
-            "วันพุธ": [
-                "ศรัญญา วรสูตร",
-                "จารุนันท์ สังข์ทอง",
-                "พิราภรณ์ กิ่งเพชร",
-                "ชาญชล ตรีถัน",
-                "ศิริประภา บุสิงค์",
-                "ศิวากร สุขประเสริฐ",
-                "ธนโชติ พาแก้ว"
-            ],
-            "วันพฤหัสบดี": [
-                "ก้องภพ คำใบ",
-                "สุจิตรา มีเทียน",
-                "อรรครพนธ์ ต่วนโต",
-                "ณัฐวรรณ ไสยาน้อย",
-                "ปรียาภรณ์ ชัยงาม",
-                "พิชญา ปิยะวงค์",
-                "จารุวรรณ อ่อนสา",
-                "นพวรรณ จันทร์นวม"
-            ],
-            "วันศุกร์": [
-                "ชานนนท์ สันเบ้า",
-                "ฐิตาภรณ์ สุขประกอบ",
-                "รพีพัฒน์ โสมภา",
-                "อัยรดา ไชยอุดม",
-                "ศุภกฤต รูปศรี",
-                "พัสนัย ไพรแก่น",
-                "ตฤณนภัส แสงหล้า",
-                "ปนัดดา ศฤคคาร"
-            ]
-        };
-
-        const DAYS_MAP = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
-
-        // Application State
-        let dutyReports = [];
-        let dataTableInstance = null;
-        let weeklyChartInstance = null;
-        let selectedBase64Image = null;
-
-        window.addEventListener('DOMContentLoaded', () => {
-            setCurrentDateDisplay();
-            renderRosterCards();
-            setupFormDefaults();
-            initChart();
-            loadInitialData();
+        window.addEventListener('error', function(e) {
+            console.warn("Caught runtime script event:", e.message || e);
         });
 
-        // Helper: Format Date object to Local YYYY-MM-DD
-        function getLocalDateString(d = new Date()) {
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
+        // Registration Window Configuration (4 - 17 สิงหาคม พ.ศ. 2569)
+        const REG_START_DATE = new Date('2026-08-04T00:00:00+07:00');
+        const REG_END_DATE = new Date('2026-08-17T23:59:59+07:00');
 
-        // Toggle Mobile Sidebar
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('show');
-            document.getElementById('sidebarOverlay').classList.toggle('show');
-        }
-
-        // Switch Tab Navigation Logic
-        function switchTab(tabId) {
-            document.querySelectorAll('.sidebar-menu .nav-link').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-content-section').forEach(el => el.classList.add('d-none'));
-
-            const targetLink = document.querySelector(`.sidebar-menu a[onclick="switchTab('${tabId}')"]`);
-            if (targetLink) targetLink.classList.add('active');
-
-            const section = document.getElementById(`section-${tabId}`);
-            if (section) section.classList.remove('d-none');
-
-            // Header Titles Map
-            const titles = {
-                'dashboard': 'แดชบอร์ดสรุปผลการทำเวร',
-                'report-duty': 'แบบฟอร์มบันทึกการทำเวรประจำวัน',
-                'history': 'ประวัติและรายงานการทำเวรย้อนหลัง',
-                'roster': 'ตารางรายชื่อเวรทำความสะอาด ม.4/3',
-                'deployment-guide': 'คู่มือติดตั้ง Code.gs & Deployment'
-            };
-            document.getElementById('page-title').innerText = titles[tabId] || 'ระบบรายงานการทำเวร';
-
-            if (window.innerWidth < 992) {
-                document.getElementById('sidebar').classList.remove('show');
-                document.getElementById('sidebarOverlay').classList.remove('show');
-            }
-
-            if (tabId === 'history' && dataTableInstance) {
-                setTimeout(() => {
-                    dataTableInstance.columns.adjust().draw();
-                }, 150);
-            }
-        }
-
-        function loadInitialData() {
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler((data) => {
-                        dutyReports = data || [];
-                        updateDashboardStats();
-                        refreshDataTable();
-                    })
-                    .withFailureHandler((err) => {
-                        console.warn("GAS load failed, loading fallback data:", err);
-                        initDemoData();
-                    })
-                    .getDutyReports();
-            } else {
-                initDemoData();
-            }
-        }
-
-        function setCurrentDateDisplay() {
+        function checkRegistrationWindow() {
             const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('current-date-text').innerText = now.toLocaleDateString('th-TH', options);
-        }
-
-        function setupFormDefaults() {
-            const today = new Date();
-            const dateStr = getLocalDateString(today);
-            document.getElementById('reportDate').value = dateStr;
-
-            let currentDayName = DAYS_MAP[today.getDay()];
-            if (currentDayName === "วันเสาร์" || currentDayName === "วันอาทิตย์") {
-                currentDayName = "วันจันทร์";
+            if (now < REG_START_DATE) {
+                return {
+                    isOpen: false,
+                    status: 'BEFORE',
+                    badgeText: 'ยังไม่ถึงกำหนดเปิดรับสมัคร',
+                    badgeClass: 'bg-warning text-dark',
+                    noticeText: '<strong><i class="fa-solid fa-clock me-2"></i>ระบบยังไม่เปิดรับสมัคร:</strong> จะเปิดรับสมัครพร้อมกันตั้งแต่วันที่ 4 สิงหาคม 2569 เวลา 00:00 น. ถึงวันที่ 17 สิงหาคม 2569 เวลา 23:59 น.',
+                    noticeClass: 'alert-warning border-warning'
+                };
+            } else if (now > REG_END_DATE) {
+                return {
+                    isOpen: false,
+                    status: 'AFTER',
+                    badgeText: 'ปิดรับสมัครแล้ว',
+                    badgeClass: 'bg-danger text-white',
+                    noticeText: '<strong><i class="fa-solid fa-lock me-2"></i>ระบบปิดรับสมัครแล้ว:</strong> สิ้นสุดระยะเวลาเปิดรับสมัครแข่งขัน (4 - 17 สิงหาคม 2569)',
+                    noticeClass: 'alert-danger border-danger'
+                };
+            } else {
+                return {
+                    isOpen: true,
+                    status: 'OPEN',
+                    badgeText: 'กำลังเปิดรับสมัคร',
+                    badgeClass: 'bg-success text-white',
+                    noticeText: '<strong><i class="fa-solid fa-circle-check me-2"></i>เปิดรับสมัครอยู่ในช่วงเวลา:</strong> 4 - 17 สิงหาคม พ.ศ. 2569',
+                    noticeClass: 'alert-success border-success'
+                };
             }
-            
-            document.getElementById('reportDayOfWeek').value = currentDayName;
-            renderStudentChecklist(currentDayName);
         }
 
-        // When Date Picker Changes: Auto-detect day of week
-        function onDatePickerChange() {
-            const dateVal = document.getElementById('reportDate').value;
-            if (!dateVal) return;
+        function updateRegistrationWindowUI() {
+            try {
+                const state = checkRegistrationWindow();
+                
+                $('#regStatusBadge')
+                    .removeClass('bg-warning bg-danger bg-success text-dark text-white')
+                    .addClass(state.badgeClass)
+                    .html(state.badgeText);
 
-            const selectedDate = new Date(dateVal + 'T00:00:00');
-            let dayName = DAYS_MAP[selectedDate.getDay()];
-            if (dayName === "วันเสาร์" || dayName === "วันอาทิตย์") {
-                dayName = "วันจันทร์";
+                const noticeEl = $('#regPeriodNotice');
+                noticeEl.removeClass('d-none alert-warning alert-danger alert-success border-warning border-danger border-success')
+                        .addClass(state.noticeClass)
+                        .html(state.noticeText);
+
+                if (!state.isOpen) {
+                    $('#registrationForm input, #registrationForm select').prop('disabled', true);
+                    $('#btnSubmitForm').prop('disabled', true).html(`<i class="fa-solid fa-lock me-1"></i> ${state.badgeText}`);
+                } else {
+                    $('#registrationForm input, #registrationForm select').prop('disabled', false);
+                    $('#btnSubmitForm').prop('disabled', false).html('<i class="fa-solid fa-paper-plane me-1"></i> ยืนยันการลงทะเบียน');
+                }
+            } catch(e) {
+                console.error("Error updating date window UI:", e);
+            }
+        }
+
+        const COMPETITION_CONFIG = [
+            {
+                mainId: "1",
+                mainTitle: "1. การออกแบบสิ่งของเครื่องใช้ด้วยโปรแกรมคอมพิวเตอร์",
+                subcategories: [
+                    { id: "1-JUNIOR", name: "การออกแบบสิ่งของเครื่องใช้ฯ - มัธยมศึกษาตอนต้น", limit: 10, icon: "fa-cube" },
+                    { id: "1-SENIOR", name: "การออกแบบสิ่งของเครื่องใช้ฯ - มัธยมศึกษาตอนปลาย", limit: 10, icon: "fa-cubes" }
+                ]
+            },
+            {
+                mainId: "2",
+                mainTitle: "2. การสร้างการ์ตูนเรื่องสั้น (Comic Strip)",
+                subcategories: [
+                    { id: "2-M1", name: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 1", limit: 5, icon: "fa-palette" },
+                    { id: "2-M2", name: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 2", limit: 5, icon: "fa-palette" },
+                    { id: "2-M3", name: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 3", limit: 5, icon: "fa-palette" },
+                    { id: "2-M4", name: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 4", limit: 5, icon: "fa-paint-brush" },
+                    { id: "2-M5", name: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 5", limit: 5, icon: "fa-paint-brush" },
+                    { id: "2-M6", name: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 6", limit: 5, icon: "fa-paint-brush" }
+                ]
+            }
+        ];
+
+        let registrationData = [];
+        let dataTableInstance = null;
+
+        function isGasAvailable() {
+            return typeof google !== 'undefined' && 
+                   typeof google.script !== 'undefined' && 
+                   typeof google.script.run !== 'undefined';
+        }
+
+        $(document).ready(function() {
+            try {
+                initSampleSeedData();
+                updateRegistrationWindowUI();
+                loadQuotaData();
+                initFilterOptions();
+                initDataTable();
+            } catch (err) {
+                console.error("Initialization error:", err);
+            }
+        });
+
+        function initSampleSeedData() {
+            try {
+                const saved = localStorage.getItem('lsk_comp_regs');
+                if (saved) {
+                    registrationData = JSON.parse(saved);
+                    return;
+                }
+            } catch(e) {
+                console.warn("Could not load from localStorage:", e);
             }
 
-            document.getElementById('reportDayOfWeek').value = dayName;
-            renderStudentChecklist(dayName);
-        }
-
-        function onDayOfWeekSelectChange() {
-            const dayOfWeekVal = document.getElementById('reportDayOfWeek').value;
-            renderStudentChecklist(dayOfWeekVal);
-        }
-
-        function renderStudentChecklist(dayName) {
-            const container = document.getElementById('students-checklist-container');
-            const students = DUTY_ROSTER[dayName] || [];
-            document.getElementById('day-student-count').innerText = students.length;
-
-            if (students.length === 0) {
-                container.innerHTML = `<div class="text-center text-muted py-3">ไม่มีข้อมูลรายชื่อเวรประจำ${dayName}</div>`;
-                return;
-            }
-
-            let html = '<div class="row g-2">';
-            students.forEach((name, idx) => {
-                html += `
-                    <div class="col-12 col-md-6">
-                        <div class="student-item-card d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-secondary rounded-circle" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center;">${idx + 1}</span>
-                                <span class="fw-semibold text-dark">${name}</span>
-                            </div>
-                            <select class="form-select form-select-sm student-status-select" style="width: 170px;" data-student="${name}">
-                                <option value="ทำเวรเรียบร้อย" class="text-success fw-bold">✓ เรียบร้อย</option>
-                                <option value="ทำเวรไม่สะอาด/แก้ไข" class="text-warning fw-bold">⚠️ ต้องแก้ไข</option>
-                                <option value="ไม่มาทำเวร" class="text-danger fw-bold">✗ ขาดเวร</option>
-                                <option value="ลา/ติดภารกิจ" class="text-info fw-bold">ℹ️ ลา/ติดภารกิจ</option>
-                            </select>
-                        </div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            container.innerHTML = html;
-        }
-
-        function markAllStatus(statusVal) {
-            document.querySelectorAll('.student-status-select').forEach(select => {
-                select.value = statusVal;
-            });
-        }
-
-        function initChart() {
-            const canvas = document.getElementById('chartWeeklyStats');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            weeklyChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์'],
-                    datasets: [
-                        {
-                            label: 'ทำเวรเรียบร้อย (คน)',
-                            data: [0, 0, 0, 0, 0],
-                            backgroundColor: 'rgba(79, 70, 229, 0.85)',
-                            borderRadius: 8
-                        },
-                        {
-                            label: 'ขาด/ไม่มาทำเวร (คน)',
-                            data: [0, 0, 0, 0, 0],
-                            backgroundColor: 'rgba(239, 68, 68, 0.75)',
-                            borderRadius: 8
-                        }
-                    ]
+            registrationData = [
+                {
+                    regId: "LSK-COMP-849102",
+                    timestamp: "04/08/2026 09:15",
+                    subCategoryId: "1-JUNIOR",
+                    subCategoryName: "การออกแบบสิ่งของเครื่องใช้ฯ - มัธยมศึกษาตอนต้น",
+                    m1Prefix: "เด็กชาย", m1Name: "เด็กชายกิตติพงษ์ มั่นคง", m1Class: "ม.2/1", m1Phone: "0891112222",
+                    m2Prefix: "เด็กหญิง", m2Name: "เด็กหญิงพิมพ์มาดา สุขใจ", m2Class: "ม.2/1", m2Phone: "0891113333",
+                    status: "อนุมัติแล้ว"
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { stepSize: 1 }
-                        }
+                {
+                    regId: "LSK-COMP-901234",
+                    timestamp: "04/08/2026 10:20",
+                    subCategoryId: "2-M1",
+                    subCategoryName: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 1",
+                    m1Prefix: "เด็กชาย", m1Name: "เด็กชายธนกฤต วิเศษ", m1Class: "ม.1/3", m1Phone: "0892223333",
+                    m2Prefix: "เด็กชาย", m2Name: "เด็กชายปณิธาน มีชัย", m2Class: "ม.1/3", m2Phone: "0892224444",
+                    status: "อนุมัติแล้ว"
+                }
+            ];
+            saveToLocalStorage();
+        }
+
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('lsk_comp_regs', JSON.stringify(registrationData));
+            } catch (e) {
+                console.warn("LocalStorage save error:", e);
+            }
+        }
+
+        function updateDbStatus(state, message) {
+            try {
+                const dot = $('#dbStatusDot');
+                const text = $('#dbStatusText');
+                
+                dot.removeClass('online offline error bg-warning');
+                
+                if (state === 'online') {
+                    dot.addClass('online');
+                    text.html(`<i class="fa-solid fa-database me-1 text-success"></i> <span class="text-dark">ฐานข้อมูล: ${message || 'เชื่อมต่อ Google Sheets แล้ว'}</span>`);
+                } else if (state === 'offline') {
+                    dot.addClass('offline');
+                    text.html(`<i class="fa-solid fa-hard-drive me-1 text-info"></i> <span class="text-dark">ฐานข้อมูล: ${message || 'โหมดจำลอง (Local)'}</span>`);
+                } else if (state === 'error') {
+                    dot.addClass('error');
+                    text.html(`<i class="fa-solid fa-triangle-exclamation me-1 text-danger"></i> <span class="text-dark">ฐานข้อมูล: ${message || 'เชื่อมต่อขัดข้อง'}</span>`);
+                } else {
+                    dot.addClass('bg-warning');
+                    text.html('<span class="text-dark">ฐานข้อมูล: กำลังเชื่อมต่อ...</span>');
+                }
+            } catch(e) {
+                console.error("Error updating DB status UI:", e);
+            }
+        }
+
+        function switchTab(tabId) {
+            try {
+                $('.tab-section').addClass('d-none');
+                $('#section-' + tabId).removeClass('d-none');
+
+                $('.nav-link').removeClass('active');
+                $('#tab-' + tabId + '-btn').addClass('active');
+
+                if (tabId === 'dashboard') {
+                    loadQuotaData();
+                } else if (tabId === 'register') {
+                    updateRegistrationWindowUI();
+                } else if (tabId === 'status') {
+                    refreshDataTable();
+                    if (dataTableInstance) {
+                        setTimeout(() => {
+                            dataTableInstance.columns.adjust().responsive.recalc();
+                        }, 150);
                     }
                 }
-            });
+            } catch(err) {
+                console.error("Error switching tab:", err);
+            }
         }
 
-        function updateDashboardStats() {
-            const today = new Date();
-            let currentDayName = DAYS_MAP[today.getDay()];
-            if (currentDayName === "วันเสาร์" || currentDayName === "วันอาทิตย์") {
-                currentDayName = "วันจันทร์";
-            }
-
-            document.getElementById('stat-today-dayname').innerText = currentDayName;
-            const rosterToday = DUTY_ROSTER[currentDayName] || [];
-            document.getElementById('stat-today-total').innerText = rosterToday.length;
-
-            const dateStr = getLocalDateString(today);
-            const todayReports = dutyReports.filter(r => r.date === dateStr || r.dayOfWeek === currentDayName);
-
-            let completedToday = 0;
-            let absentToday = 0;
-
-            if (todayReports.length > 0) {
-                const latestToday = todayReports[0];
-                completedToday = latestToday.completedCount || 0;
-                absentToday = (latestToday.totalCount || rosterToday.length) - completedToday;
-            }
-
-            document.getElementById('stat-today-completed').innerText = completedToday;
-            const pct = rosterToday.length > 0 ? Math.round((completedToday / rosterToday.length) * 100) : 0;
-            document.getElementById('stat-today-pct').innerText = `${pct}% ของวันนี้`;
-            document.getElementById('stat-today-absent').innerText = absentToday;
-            document.getElementById('stat-total-reports').innerText = dutyReports.length;
-
-            // Update Weekly Chart
-            if (weeklyChartInstance) {
-                const days = ['วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์'];
-                const completedData = [0, 0, 0, 0, 0];
-                const absentData = [0, 0, 0, 0, 0];
-
-                days.forEach((day, idx) => {
-                    const dayReps = dutyReports.filter(r => r.dayOfWeek === day);
-                    if (dayReps.length > 0) {
-                        const latestRep = dayReps[0];
-                        completedData[idx] = latestRep.completedCount || 0;
-                        absentData[idx] = Math.max(0, (latestRep.totalCount || 0) - (latestRep.completedCount || 0));
+        function loadQuotaData() {
+            if (isGasAvailable()) {
+                google.script.run
+                    .withSuccessHandler(function(counts) {
+                        updateDbStatus('online', 'เชื่อมต่อ Google Sheets เรียบร้อย');
+                        renderQuotaCards(counts || {});
+                    })
+                    .withFailureHandler(function(err) {
+                        console.error("GAS Quota fetch failed:", err);
+                        updateDbStatus('error', 'เชื่อมต่อ Google Sheets ล้มเหลว');
+                        renderQuotaCards({});
+                    })
+                    .getQuotaStatus();
+            } else {
+                updateDbStatus('offline', 'โหมดจำลอง (Local Storage)');
+                const counts = {};
+                (registrationData || []).forEach(item => {
+                    if (item && item.subCategoryId) {
+                        counts[item.subCategoryId] = (counts[item.subCategoryId] || 0) + 1;
                     }
                 });
-
-                weeklyChartInstance.data.datasets[0].data = completedData;
-                weeklyChartInstance.data.datasets[1].data = absentData;
-                weeklyChartInstance.update();
+                renderQuotaCards(counts);
             }
+        }
 
-            // Render Recent Reports
-            const recentBody = document.getElementById('recent-table-body');
-            if (recentBody) {
-                if (dutyReports.length === 0) {
-                    recentBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-3">ยังไม่มีข้อมูลรายงานการทำเวร</td></tr>`;
-                } else {
-                    const recent = dutyReports.slice(0, 5);
-                    let html = '';
-                    recent.forEach(r => {
-                        const imgDisplay = formatDriveImageUrl(r.imageUrl);
-                        const areaText = Array.isArray(r.areas) ? r.areas.join(', ') : (r.areas || '-');
-                        const pctComp = r.totalCount > 0 ? Math.round((r.completedCount / r.totalCount) * 100) : 0;
-                        let badgeClass = 'bg-success';
-                        if (pctComp < 50) badgeClass = 'bg-danger';
-                        else if (pctComp < 100) badgeClass = 'bg-warning text-dark';
+        function renderQuotaCards(counts) {
+            try {
+                let gridHtml = '';
+                let totalCap = 0;
+                let totalReg = 0;
+                const windowState = checkRegistrationWindow();
 
-                        html += `
-                            <tr>
-                                <td><small class="fw-semibold">${r.date}</small></td>
-                                <td><span class="badge bg-light text-dark border">${r.dayOfWeek}</span></td>
-                                <td><small>${r.shift}</small></td>
-                                <td><small class="text-truncate d-inline-block" style="max-width: 180px;">${areaText}</small></td>
-                                <td><span class="badge ${badgeClass}">${r.completedCount}/${r.totalCount} คน (${pctComp}%)</span></td>
-                                <td>
-                                    ${r.imageUrl ? `<img src="${imgDisplay}" class="rounded border cursor-pointer" style="width:40px; height:40px; object-fit:cover;" onclick="viewPhoto('${r.id}')" title="คลิกดูภาพ">` : '<span class="text-muted small">-</span>'}
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary" onclick="viewPhoto('${r.id}')"><i class="fa-solid fa-eye"></i></button>
-                                </td>
-                            </tr>
+                COMPETITION_CONFIG.forEach(group => {
+                    gridHtml += `<div class="col-12"><h5 class="fw-bold text-dark border-bottom pb-2 mt-2"><i class="fa-solid fa-layer-group text-primary me-2"></i>${group.mainTitle}</h5></div>`;
+
+                    group.subcategories.forEach(sub => {
+                        const registered = counts[sub.id] || 0;
+                        const remaining = Math.max(0, sub.limit - registered);
+                        const isFull = remaining === 0;
+                        const isDisabled = isFull || !windowState.isOpen;
+                        const percentage = Math.min(100, Math.round((registered / sub.limit) * 100));
+
+                        totalCap += sub.limit;
+                        totalReg += registered;
+
+                        let buttonLabel = 'สมัครตอนนี้ <i class="fa-solid fa-arrow-right ms-1"></i>';
+                        if (!windowState.isOpen) {
+                            buttonLabel = windowState.badgeText;
+                        } else if (isFull) {
+                            buttonLabel = 'สิทธิ์เต็ม';
+                        }
+
+                        gridHtml += `
+                            <div class="col-md-6 col-lg-4">
+                                <div class="glass-card p-3 category-card ${isFull ? 'full' : ''}">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="rounded-circle ${isFull ? 'bg-danger text-white' : 'bg-primary bg-opacity-10 text-primary'} p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                                <i class="fa-solid ${sub.icon}"></i>
+                                            </div>
+                                            <h6 class="fw-bold mb-0">${sub.name}</h6>
+                                        </div>
+                                    </div>
+                                    <div class="my-3">
+                                        <div class="d-flex justify-content-between small text-muted mb-1">
+                                            <span>จำนวนที่สมัครแล้ว: <strong>${registered}/${sub.limit} ทีม</strong></span>
+                                            <span class="${isFull ? 'text-danger fw-bold' : 'text-success'}">${isFull ? 'เต็มแล้ว' : 'ว่าง ' + remaining + ' ทีม'}</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar ${isFull ? 'bg-danger' : (percentage > 75 ? 'bg-warning' : 'bg-primary')}" 
+                                                 role="progressbar" style="width: ${percentage}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        ${isFull ? 
+                                            `<span class="badge bg-danger badge-seats"><i class="fa-solid fa-ban me-1"></i>เต็มแล้ว</span>` : 
+                                            `<span class="badge bg-success badge-seats"><i class="fa-solid fa-circle-check me-1"></i>เปิดรับสมัคร</span>`
+                                        }
+                                        <button class="btn btn-sm ${isDisabled ? 'btn-outline-secondary' : 'btn-outline-primary'} rounded-pill px-3" 
+                                                ${isDisabled ? 'disabled' : ''} 
+                                                onclick="selectCategoryAndRegister('${group.mainId}', '${sub.id}')">
+                                            ${buttonLabel}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         `;
                     });
-                    recentBody.innerHTML = html;
+                });
+
+                $('#quota-cards-grid').html(gridHtml);
+                $('#total-capacity-count').text(totalCap + " ทีม");
+                $('#total-registered-count').text(totalReg + " ทีม");
+                $('#total-remaining-count').text(Math.max(0, totalCap - totalReg) + " ทีม");
+            } catch(e) {
+                console.error("Error rendering quota cards:", e);
+            }
+        }
+
+        function selectCategoryAndRegister(mainId, subId) {
+            try {
+                const windowState = checkRegistrationWindow();
+                if (!windowState.isOpen) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'ไม่อยู่ในช่วงเวลาเปิดรับสมัคร',
+                        text: 'การเปิดรับสมัครจะมีขึ้นตั้งแต่วันที่ 4 ถึง 17 สิงหาคม พ.ศ. 2569',
+                        confirmButtonText: 'รับทราบ',
+                        confirmButtonColor: '#4f46e5'
+                    });
+                    return;
                 }
+
+                switchTab('register');
+                $('#mainCategorySelect').val(mainId).trigger('change');
+                setTimeout(() => {
+                    $('#subCategorySelect').val(subId).trigger('change');
+                }, 100);
+            } catch(e) {
+                console.error("Error selecting category:", e);
+            }
+        }
+
+        function onMainCategoryChange() {
+            try {
+                const mainId = $('#mainCategorySelect').val();
+                const subSelect = $('#subCategorySelect');
+                subSelect.empty().append('<option value="" selected disabled>-- กรุณาเลือกระดับชั้น/กลุ่มการแข่งขัน --</option>');
+
+                const group = COMPETITION_CONFIG.find(g => g.mainId === mainId);
+                if (group) {
+                    group.subcategories.forEach(sub => {
+                        subSelect.append(`<option value="${sub.id}">${sub.name} (รับสูงสุด ${sub.limit} ทีม)</option>`);
+                    });
+                }
+                $('#quotaNotice').addClass('d-none');
+                
+                const windowState = checkRegistrationWindow();
+                if (windowState.isOpen) {
+                    $('#btnSubmitForm').prop('disabled', false);
+                }
+            } catch(e) {
+                console.error("Error in onMainCategoryChange:", e);
+            }
+        }
+
+        function checkSubcategoryQuota() {
+            try {
+                const subId = $('#subCategorySelect').val();
+                if (!subId) return;
+
+                let subObj = null;
+                COMPETITION_CONFIG.forEach(g => {
+                    const found = g.subcategories.find(s => s.id === subId);
+                    if (found) subObj = found;
+                });
+
+                if (!subObj) return;
+
+                if (isGasAvailable()) {
+                    google.script.run
+                        .withSuccessHandler(function(counts) {
+                            const currentReg = (counts || {})[subId] || 0;
+                            evaluateQuotaState(subObj, currentReg);
+                        })
+                        .withFailureHandler(function(err) {
+                            const currentReg = registrationData.filter(r => r.subCategoryId === subId).length;
+                            evaluateQuotaState(subObj, currentReg);
+                        })
+                        .getQuotaStatus();
+                } else {
+                    const currentReg = registrationData.filter(r => r.subCategoryId === subId).length;
+                    evaluateQuotaState(subObj, currentReg);
+                }
+            } catch(e) {
+                console.error("Error checking quota:", e);
+            }
+        }
+
+        function evaluateQuotaState(subObj, registered) {
+            try {
+                const windowState = checkRegistrationWindow();
+                if (!windowState.isOpen) return;
+
+                const remaining = subObj.limit - registered;
+                const noticeDiv = $('#quotaNotice');
+
+                if (remaining <= 0) {
+                    noticeDiv.removeClass('d-none alert-success alert-warning').addClass('alert alert-danger rounded-4')
+                        .html(`<i class="fa-solid fa-triangle-exclamation me-2"></i> <strong>แจ้งเตือน:</strong> รายการ <u>${subObj.name}</u> มีผู้สมัครเต็มตามจำนวนที่กำหนดแล้ว (${subObj.limit}/${subObj.limit} ทีม)`);
+                    
+                    $('#btnSubmitForm').prop('disabled', true);
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'โควตาเต็มแล้ว!',
+                        text: `รายการ ${subObj.name} มีผู้สมัครครบเต็มจำนวน ${subObj.limit} ทีมแล้ว ไม่สามารถลงทะเบียนเพิ่มได้`,
+                        confirmButtonText: 'รับทราบ',
+                        confirmButtonColor: '#ef4444'
+                    });
+                } else {
+                    noticeDiv.removeClass('d-none alert-danger alert-warning').addClass('alert alert-success rounded-4')
+                        .html(`<i class="fa-solid fa-circle-check me-2"></i> สามารถสมัครได้: <u>${subObj.name}</u> คงเหลือสิทธิ์อีก <strong>${remaining}</strong> ทีม`);
+                    
+                    $('#btnSubmitForm').prop('disabled', false);
+                }
+            } catch(e) {
+                console.error("Error evaluating quota state:", e);
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            try {
+                const windowState = checkRegistrationWindow();
+                if (!windowState.isOpen) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ไม่สามารถลงทะเบียนได้',
+                        text: 'การลงทะเบียนเปิดรับเฉพาะวันที่ 4 ถึง 17 สิงหาคม พ.ศ. 2569 เท่านั้น',
+                        confirmButtonColor: '#ef4444'
+                    });
+                    return;
+                }
+
+                const form = document.getElementById('registrationForm');
+                if (!form.checkValidity()) {
+                    e.stopPropagation();
+                    form.classList.add('was-validated');
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'กรอกข้อมูลไม่ครบถ้วน',
+                        text: 'กรุณากรอกข้อมูลในช่องที่มีเครื่องหมาย * ให้ครบถ้วน',
+                        confirmButtonColor: '#4f46e5'
+                    });
+                    return;
+                }
+
+                const subId = $('#subCategorySelect').val();
+                let subObj = null;
+                COMPETITION_CONFIG.forEach(g => {
+                    const found = g.subcategories.find(s => s.id === subId);
+                    if (found) subObj = found;
+                });
+
+                if (!subObj) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'กรุณาเลือกรายการแข่งขัน',
+                        confirmButtonColor: '#4f46e5'
+                    });
+                    return;
+                }
+
+                const currentReg = registrationData.filter(r => r.subCategoryId === subId).length;
+                if (currentReg >= subObj.limit) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ไม่สามารถลงทะเบียนได้',
+                        text: 'รายการนี้มีผู้สมัครเต็มจำนวนโควตาแล้ว!',
+                        confirmButtonColor: '#ef4444'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'กำลังบันทึกข้อมูล...',
+                    text: 'โปรดรอสักครู่ ระบบกำลังจัดเก็บข้อมูลลงใน Google Sheet',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                const payload = {
+                    subCategoryId: subId,
+                    subCategoryName: subObj.name,
+                    maxLimit: subObj.limit,
+                    m1Prefix: $('#m1Prefix').val(),
+                    m1Name: $('#m1Name').val().trim(),
+                    m1Class: $('#m1Class').val().trim(),
+                    m1Phone: $('#m1Phone').val().trim(),
+                    m2Prefix: $('#m2Prefix').val(),
+                    m2Name: $('#m2Name').val().trim(),
+                    m2Class: $('#m2Class').val().trim(),
+                    m2Phone: $('#m2Phone').val().trim()
+                };
+
+                const now = new Date();
+                const timeStr = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+                if (isGasAvailable()) {
+                    google.script.run
+                        .withSuccessHandler(function(res) {
+                            if (res && res.success) {
+                                const newRecord = {
+                                    regId: res.regId,
+                                    timestamp: timeStr,
+                                    ...payload,
+                                    m1Name: payload.m1Prefix + payload.m1Name,
+                                    m2Name: payload.m2Prefix + payload.m2Name,
+                                    status: "อนุมัติแล้ว"
+                                };
+                                registrationData.unshift(newRecord);
+                                saveToLocalStorage();
+                            }
+                            onSaveSuccess(res);
+                        })
+                        .withFailureHandler(onSaveError)
+                        .saveRegistration(payload);
+                } else {
+                    setTimeout(() => {
+                        const newRegId = "LSK-COMP-" + Math.floor(100000 + Math.random() * 900000);
+
+                        const record = {
+                            regId: newRegId,
+                            timestamp: timeStr,
+                            ...payload,
+                            m1Name: payload.m1Prefix + payload.m1Name,
+                            m2Name: payload.m2Prefix + payload.m2Name,
+                            status: "อนุมัติแล้ว"
+                        };
+
+                        registrationData.unshift(record);
+                        saveToLocalStorage();
+                        onSaveSuccess({ success: true, regId: newRegId });
+                    }, 600);
+                }
+            } catch(err) {
+                console.error("Error submitting form:", err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: err.message || 'ไม่สามารถดำเนินการได้',
+                    confirmButtonColor: '#ef4444'
+                });
+            }
+        }
+
+        function onSaveSuccess(res) {
+            Swal.close();
+            if (res && res.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ลงทะเบียนสำเร็จ!',
+                    html: `รหัสลงทะเบียนของคุณคือ: <h4 class="text-primary mt-2 fw-bold">${res.regId}</h4>`,
+                    confirmButtonText: 'ดูใบยืนยันการสมัคร',
+                    confirmButtonColor: '#4f46e5'
+                }).then(() => {
+                    resetFormState();
+                    loadQuotaData();
+                    switchTab('status');
+                    showReceiptModal(res.regId);
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ไม่สามารถบันทึกได้',
+                    text: res ? res.message : 'เกิดข้อผิดพลาดไม่ทราบสาเหตุ',
+                    confirmButtonColor: '#ef4444'
+                });
+            }
+        }
+
+        function onSaveError(err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาดในการส่งข้อมูล',
+                text: err ? err.toString() : 'เกิดข้อผิดพลาดในการเชื่อมต่อ',
+                confirmButtonColor: '#ef4444'
+            });
+        }
+
+        function resetFormState() {
+            try {
+                document.getElementById('registrationForm').reset();
+                document.getElementById('registrationForm').classList.remove('was-validated');
+                $('#subCategorySelect').empty().append('<option value="" selected disabled>-- กรุณาเลือกรายการหลักก่อน --</option>');
+                $('#quotaNotice').addClass('d-none');
+                
+                const windowState = checkRegistrationWindow();
+                if (windowState.isOpen) {
+                    $('#btnSubmitForm').prop('disabled', false);
+                } else {
+                    $('#btnSubmitForm').prop('disabled', true);
+                }
+            } catch(e) {
+                console.error("Reset form error:", e);
+            }
+        }
+
+        function initFilterOptions() {
+            try {
+                const filter = $('#tableFilterCategory');
+                filter.empty().append('<option value="">-- แสดงทุกรายการแข่งขัน --</option>');
+                COMPETITION_CONFIG.forEach(g => {
+                    g.subcategories.forEach(s => {
+                        filter.append(`<option value="${s.name}">${s.name}</option>`);
+                    });
+                });
+            } catch(e) {
+                console.error("Filter init error:", e);
+            }
+        }
+
+        function initDataTable() {
+            try {
+                if ($.fn.DataTable.isDataTable('#teamsTable')) {
+                    $('#teamsTable').DataTable().destroy();
+                }
+
+                dataTableInstance = $('#teamsTable').DataTable({
+                    responsive: true,
+                    language: {
+                        search: "ค้นหาทีม/ผู้สมัคร:",
+                        lengthMenu: "แสดง _MENU_ รายการ",
+                        info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+                        infoEmpty: "ไม่มีข้อมูล",
+                        zeroRecords: "ไม่พบข้อมูลทีมที่ลงทะเบียน",
+                        paginate: {
+                            first: "หน้าแรก",
+                            last: "หน้าสุดท้าย",
+                            next: "ถัดไป",
+                            previous: "ก่อนหน้า"
+                        }
+                    },
+                    order: []
+                });
+
+                refreshDataTable();
+            } catch(err) {
+                console.warn("DataTable deferred or error:", err);
             }
         }
 
         function refreshDataTable() {
-            const tbody = document.querySelector('#historyDataTable tbody');
-            if (!tbody) return;
-
-            let html = '';
-            dutyReports.forEach((r, idx) => {
-                const imgDisplay = formatDriveImageUrl(r.imageUrl);
-                const areaText = Array.isArray(r.areas) ? r.areas.join(', ') : (r.areas || '-');
-                const pctComp = r.totalCount > 0 ? Math.round((r.completedCount / r.totalCount) * 100) : 0;
-                let badgeClass = 'bg-success';
-                if (pctComp < 50) badgeClass = 'bg-danger';
-                else if (pctComp < 100) badgeClass = 'bg-warning text-dark';
-
-                let studentDetailStr = '';
-                if (Array.isArray(r.studentStatuses)) {
-                    studentDetailStr = r.studentStatuses.map(s => `${s.name}: ${s.status}`).join(', ');
-                }
-
-                html += `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td><small class="fw-bold">${r.date}</small></td>
-                        <td><span class="badge bg-primary-subtle text-primary border">${r.dayOfWeek}</span></td>
-                        <td><small>${r.shift}</small></td>
-                        <td>
-                            <span class="badge ${badgeClass} mb-1">${r.completedCount}/${r.totalCount} คน</span>
-                            <div class="small text-muted text-truncate" style="max-width: 200px;" title="${studentDetailStr}">${studentDetailStr}</div>
-                        </td>
-                        <td><small class="text-truncate d-inline-block" style="max-width:180px;" title="${areaText}">${areaText}</small></td>
-                        <td class="text-center">
-                            ${r.imageUrl ? `<img src="${imgDisplay}" class="rounded border shadow-sm cursor-pointer" style="width:45px; height:45px; object-fit:cover;" onclick="viewPhoto('${r.id}')">` : '<span class="text-muted small">ไม่มีรูป</span>'}
-                        </td>
-                        <td><small>${r.remarks || '-'}</small></td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-outline-primary" onclick="viewPhoto('${r.id}')" title="ดูรายละเอียด/รูปภาพ"><i class="fa-solid fa-eye"></i></button>
-                                <button class="btn btn-outline-danger" onclick="deleteReport('${r.id}')" title="ลบรายการ"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            tbody.innerHTML = html;
-
-            if ($.fn.DataTable.isDataTable('#historyDataTable')) {
-                $('#historyDataTable').DataTable().destroy();
-            }
-
-            dataTableInstance = $('#historyDataTable').DataTable({
-                language: {
-                    search: "ค้นหา:",
-                    lengthMenu: "แสดง _MENU_ รายการ",
-                    info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
-                    infoEmpty: "ไม่มีรายการ",
-                    zeroRecords: "ไม่พบข้อมูลที่ค้นหา",
-                    paginate: {
-                        first: "หน้าแรก",
-                        previous: "ก่อนหน้า",
-                        next: "ถัดไป",
-                        last: "หน้าสุดท้าย"
-                    }
-                },
-                order: [[1, 'desc']],
-                pageLength: 10,
-                responsive: true
-            });
-        }
-
-        function initDemoData() {
-            const saved = localStorage.getItem('lomsak_duty_reports');
-            if (saved) {
-                try {
-                    dutyReports = JSON.parse(saved);
-                } catch (e) {
-                    dutyReports = getDemoSeedData();
-                }
+            if (isGasAvailable()) {
+                updateDbStatus('pending', 'กำลังดึงข้อมูลล่าสุด...');
+                google.script.run
+                    .withSuccessHandler(function(data) {
+                        if (data && data.length > 0) {
+                            registrationData = data;
+                            saveToLocalStorage();
+                        }
+                        updateDbStatus('online', `เชื่อมต่อ Google Sheets (${registrationData.length} รายการ)`);
+                        populateTableRows(registrationData);
+                    })
+                    .withFailureHandler(function(err) {
+                        console.error("GAS Table refresh error:", err);
+                        updateDbStatus('error', 'ไม่สามารถอ่านข้อมูลจาก Google Sheets ได้');
+                        populateTableRows(registrationData);
+                    })
+                    .getAllRegistrations();
             } else {
-                dutyReports = getDemoSeedData();
-                localStorage.setItem('lomsak_duty_reports', JSON.stringify(dutyReports));
+                updateDbStatus('offline', 'โหมดจำลอง (Local Storage)');
+                populateTableRows(registrationData);
             }
-            updateDashboardStats();
-            refreshDataTable();
         }
 
-        function getDemoSeedData() {
-            const todayStr = getLocalDateString();
-            return [
-                {
-                    id: 'REP-1001',
-                    timestamp: new Date().toLocaleString('th-TH'),
-                    date: todayStr,
-                    dayOfWeek: 'วันจันทร์',
-                    shift: 'เช้า (07.00 - 07.45 น.)',
-                    completedCount: 8,
-                    totalCount: 8,
-                    studentStatuses: DUTY_ROSTER['วันจันทร์'].map(name => ({ name, status: 'ทำเวรเรียบร้อย' })),
-                    areas: ['กวาดพื้น/ถูพื้นห้องเรียน', 'ลบกระดาน/ทำความสะอาดหน้าห้อง', 'จัดโต๊ะเก้าอี้ให้เป็นระเบียบ', 'นำขยะไปทิ้งที่จุดรวบรวม'],
-                    imageUrl: 'https://placehold.co/600x400/4f46e5/ffffff?text=รายงานเวรวันจันทร์+(ม.4/3)',
-                    remarks: 'กวาดและถูห้องเรียนเรียบร้อยตามเวลา'
-                },
-                {
-                    id: 'REP-1002',
-                    timestamp: new Date().toLocaleString('th-TH'),
-                    date: todayStr,
-                    dayOfWeek: 'วันอังคาร',
-                    shift: 'เย็น (15.30 - 16.30 น.)',
-                    completedCount: 7,
-                    totalCount: 8,
-                    studentStatuses: DUTY_ROSTER['วันอังคาร'].map((name, i) => ({ name, status: i === 0 ? 'ลา/ติดภารกิจ' : 'ทำเวรเรียบร้อย' })),
-                    areas: ['กวาดพื้น/ถูพื้นห้องเรียน', 'จัดโต๊ะเก้าอี้ให้เป็นระเบียบ', 'นำขยะไปทิ้งที่จุดรวบรวม'],
-                    imageUrl: 'https://placehold.co/600x400/06b6d4/ffffff?text=รายงานเวรวันอังคาร+(ม.4/3)',
-                    remarks: 'กายสิทธิ์ ทองเพชร ติดซ้อมกีฬาโรงเรียน'
-                }
-            ];
-        }
-
-        function applyFilters() {
-            const dayVal = document.getElementById('filterDay').value;
-            const shiftVal = document.getElementById('filterShift').value;
-            const studentVal = document.getElementById('filterStudent').value.trim().toLowerCase();
-
+        function populateTableRows(data) {
             if (!dataTableInstance) return;
 
-            dataTableInstance.column(2).search(dayVal);
-            dataTableInstance.column(3).search(shiftVal);
-            dataTableInstance.search(studentVal).draw();
-        }
+            try {
+                dataTableInstance.clear();
+                (data || []).forEach(item => {
+                    if (!item || !item.regId) return;
+                    const member1 = `<div class="small fw-semibold">${item.m1Name || ''}</div><div class="small text-muted">ชั้น ${item.m1Class || ''} | <i class="fa-solid fa-phone me-1"></i>${item.m1Phone || ''}</div>`;
+                    const member2 = `<div class="small fw-semibold">${item.m2Name || ''}</div><div class="small text-muted">ชั้น ${item.m2Class || ''} | <i class="fa-solid fa-phone me-1"></i>${item.m2Phone || ''}</div>`;
+                    const badgeStatus = `<span class="badge bg-success rounded-pill px-3 py-1"><i class="fa-solid fa-circle-check me-1"></i>${item.status || 'อนุมัติแล้ว'}</span>`;
+                    const actions = `
+                        <button class="btn btn-sm btn-outline-primary rounded-circle" title="พิมพ์ใบสมัคร" onclick="showReceiptModal('${item.regId}')">
+                            <i class="fa-solid fa-print"></i>
+                        </button>
+                    `;
 
-        function resetFilters() {
-            document.getElementById('filterDay').value = '';
-            document.getElementById('filterShift').value = '';
-            document.getElementById('filterStudent').value = '';
-
-            if (dataTableInstance) {
-                dataTableInstance.search('').columns().search('').draw();
-            }
-        }
-
-        // Image compression before converting to Base64 to avoid GAS payload limit
-        function previewAndCompressImage(input) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 1024;
-                        const MAX_HEIGHT = 1024;
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > height) {
-                            if (width > MAX_WIDTH) {
-                                height *= MAX_WIDTH / width;
-                                width = MAX_WIDTH;
-                            }
-                        } else {
-                            if (height > MAX_HEIGHT) {
-                                width *= MAX_HEIGHT / height;
-                                height = MAX_HEIGHT;
-                            }
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        selectedBase64Image = canvas.toDataURL('image/jpeg', 0.8);
-                        document.getElementById('img-preview').src = selectedBase64Image;
-                        document.getElementById('image-preview-container').classList.remove('d-none');
-                    };
-                };
-
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function clearImagePreview() {
-            selectedBase64Image = null;
-            document.getElementById('dutyPhotoInput').value = '';
-            document.getElementById('img-preview').src = '';
-            document.getElementById('image-preview-container').classList.add('d-none');
-        }
-
-        async function handleFormSubmit(event) {
-            event.preventDefault();
-
-            const date = document.getElementById('reportDate').value;
-            const dayOfWeek = document.getElementById('reportDayOfWeek').value;
-            const shift = document.getElementById('reportShift').value;
-            const remarks = document.getElementById('reportRemarks').value.trim();
-
-            const studentStatuses = [];
-            let completedCount = 0;
-            const statusSelects = document.querySelectorAll('.student-status-select');
-
-            statusSelects.forEach(select => {
-                const name = select.getAttribute('data-student');
-                const status = select.value;
-                if (status === 'ทำเวรเรียบร้อย') completedCount++;
-                studentStatuses.push({ name, status });
-            });
-
-            const checkedAreas = [];
-            document.querySelectorAll('.area-checkbox:checked').forEach(cb => {
-                checkedAreas.push(cb.value);
-            });
-
-            if (checkedAreas.length === 0) {
-                Swal.fire('แจ้งเตือน', 'กรุณาเลือกจุดทำความสะอาดอย่างน้อย 1 จุด', 'warning');
-                return;
-            }
-
-            if (!selectedBase64Image) {
-                Swal.fire('แจ้งเตือน', 'กรุณาอัปโหลดรูปถ่ายหลักฐานการทำเวร', 'warning');
-                return;
-            }
-
-            Swal.fire({
-                title: 'กำลังบันทึกข้อมูล...',
-                text: 'กำลังบันทึกลง Google Sheets และอัปโหลดรูปภาพลง Google Drive',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading(); }
-            });
-
-            const payload = {
-                date: date,
-                dayOfWeek: dayOfWeek,
-                shift: shift,
-                studentStatuses: studentStatuses,
-                completedCount: completedCount,
-                totalCount: studentStatuses.length,
-                areas: checkedAreas,
-                imageData: selectedBase64Image,
-                remarks: remarks || '-'
-            };
-
-            // GAS Server Integration
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                google.script.run
-                    .withSuccessHandler((res) => {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'บันทึกสำเร็จ!',
-                            text: res.message || 'บันทึกรายงานลง Google Sheet และ Drive เรียบร้อยแล้ว',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                        resetDutyForm();
-                        loadInitialData();
-                        switchTab('dashboard');
-                    })
-                    .withFailureHandler((err) => {
-                        Swal.fire('เกิดข้อผิดพลาด', err.toString(), 'error');
-                    })
-                    .saveDutyReport(payload);
-            } else {
-                // Local fallback mode
-                const newReport = {
-                    id: 'REP-' + Date.now(),
-                    timestamp: new Date().toLocaleString('th-TH'),
-                    ...payload,
-                    imageUrl: selectedBase64Image
-                };
-                dutyReports.unshift(newReport);
-                localStorage.setItem('lomsak_duty_reports', JSON.stringify(dutyReports));
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'บันทึกข้อมูลสำเร็จ!',
-                    text: 'บันทึกในระบบเรียบร้อยแล้ว',
-                    timer: 2000,
-                    showConfirmButton: false
+                    dataTableInstance.row.add([
+                        `<span class="fw-bold text-primary">${item.regId || ''}</span>`,
+                        `<span class="small fw-semibold" data-search="${item.subCategoryName || ''}" data-order="${item.subCategoryName || ''}">${item.subCategoryName || ''}</span>`,
+                        member1,
+                        member2,
+                        `<span class="small text-muted">${item.timestamp || ''}</span>`,
+                        badgeStatus,
+                        actions
+                    ]);
                 });
+                dataTableInstance.draw();
 
-                resetDutyForm();
-                updateDashboardStats();
-                refreshDataTable();
-                switchTab('dashboard');
+                setTimeout(() => {
+                    dataTableInstance.columns.adjust().responsive.recalc();
+                }, 100);
+            } catch(e) {
+                console.error("Error populating table rows:", e);
             }
         }
 
-        function resetDutyForm() {
-            document.getElementById('dutyReportForm').reset();
-            clearImagePreview();
-            setupFormDefaults();
-        }
-
-        function formatDriveImageUrl(url) {
-            if (!url) return 'https://placehold.co/600x400/e2e8f0/475569?text=ไม่มีรูปภาพ';
-            
-            if (url.startsWith('data:image/') || url.startsWith('blob:') || url.includes('placehold.co')) {
-                return url;
-            }
-
-            let fileId = '';
-            const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-            const matchId = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-            
-            if (matchD && matchD[1]) {
-                fileId = matchD[1];
-            } else if (matchId && matchId[1]) {
-                fileId = matchId[1];
-            }
-
-            if (fileId) {
-                return `https://lh3.googleusercontent.com/d/${fileId}`;
-            }
-
-            return url;
-        }
-
-        function viewPhoto(reportId) {
-            const report = dutyReports.find(r => r.id === reportId);
-            if (!report) return;
-
-            const displayUrl = formatDriveImageUrl(report.imageUrl);
-            const rawUrl = report.imageUrl || '';
-
-            document.getElementById('photoModalTitle').innerText = `หลักฐานการทำเวร - ${report.dayOfWeek} (${report.date})`;
-            
-            const imgEl = document.getElementById('modalPhotoImg');
-            imgEl.src = displayUrl;
-            
-            const driveBtn = document.getElementById('modalDriveLink');
-            if (rawUrl.includes('drive.google.com') || rawUrl.includes('docs.google.com')) {
-                driveBtn.href = rawUrl;
-                driveBtn.classList.remove('d-none');
-            } else {
-                driveBtn.classList.add('d-none');
-            }
-
-            const areaText = Array.isArray(report.areas) ? report.areas.join(', ') : report.areas;
-            document.getElementById('modalPhotoDetails').innerHTML = `
-                <div><strong>ช่วงเวลา:</strong> ${report.shift}</div>
-                <div><strong>งานที่ทำ:</strong> ${areaText}</div>
-                <div><strong>หมายเหตุ:</strong> ${report.remarks || '-'}</div>
-            `;
-
-            const modal = new bootstrap.Modal(document.getElementById('photoModal'));
-            modal.show();
-        }
-
-        function deleteReport(reportId) {
-            Swal.fire({
-                title: 'ยืนยันการลบรายงาน?',
-                text: "ข้อมูลนี้จะถูกลบออกจากระบบและ Google Sheet",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                confirmButtonText: 'ลบรายการ',
-                cancelButtonText: 'ยกเลิก'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    if (typeof google !== 'undefined' && google.script && google.script.run) {
-                        Swal.showLoading();
-                        google.script.run
-                            .withSuccessHandler((res) => {
-                                Swal.fire('ลบเรียบร้อย!', 'ลบรายการสำเร็จแล้ว', 'success');
-                                loadInitialData();
-                            })
-                            .withFailureHandler((err) => {
-                                Swal.fire('เกิดข้อผิดพลาด', err.toString(), 'error');
-                            })
-                            .deleteDutyReport(reportId);
+        function filterStatusTable() {
+            try {
+                const val = $('#tableFilterCategory').val();
+                if (dataTableInstance) {
+                    if (val) {
+                        const escapedVal = val.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                        dataTableInstance.column(1).search(escapedVal, true, false).draw();
                     } else {
-                        dutyReports = dutyReports.filter(r => r.id !== reportId);
-                        localStorage.setItem('lomsak_duty_reports', JSON.stringify(dutyReports));
-                        refreshDataTable();
-                        updateDashboardStats();
-                        Swal.fire('ลบเรียบร้อย!', 'ลบรายการสำเร็จแล้ว', 'success');
+                        dataTableInstance.column(1).search('', false, true).draw();
                     }
                 }
-            });
+            } catch(e) {
+                console.error("Filter table error:", e);
+            }
         }
 
-        function renderRosterCards() {
-            const daysKey = [
-                { key: "วันจันทร์", target: "roster-list-mon" },
-                { key: "วันอังคาร", target: "roster-list-tue" },
-                { key: "วันพุธ", target: "roster-list-wed" },
-                { key: "วันพฤหัสบดี", target: "roster-list-thu" },
-                { key: "วันศุกร์", target: "roster-list-fri" }
-            ];
+        function showReceiptModal(regId) {
+            try {
+                const item = registrationData.find(r => r.regId === regId);
+                if (!item) return;
 
-            daysKey.forEach(item => {
-                const container = document.getElementById(item.target);
-                const students = DUTY_ROSTER[item.key] || [];
-                
-                let html = '';
-                students.forEach((studentName, i) => {
-                    html += `
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <div class="card-modern p-3 d-flex align-items-center gap-3 border-start border-4 border-primary">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:38px; height:38px; flex-shrink:0;">
-                                    ${i + 1}
+                const html = `
+                    <div class="receipt-card" id="printableArea">
+                        <div class="text-center mb-4 pb-3 border-bottom">
+                            <div class="fw-bold fs-4 text-primary">ใบยืนยันการลงทะเบียนเข้าแข่งขัน</div>
+                            <div class="text-muted fs-6">กิจกรรมสัปดาห์วิทยาศาสตร์ (การแข่งขันด้านเทคโนโลยี)</div>
+                            <div class="badge bg-primary px-3 py-2 mt-2">รหัสอ้างอิง: ${item.regId}</div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <strong class="text-muted d-block small">รายการแข่งขัน:</strong>
+                                <span class="fw-bold text-dark">${item.subCategoryName || '-'}</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <strong class="text-muted d-block small">วันที่ลงทะเบียน:</strong>
+                                <span>${item.timestamp || '-'}</span>
+                            </div>
+                        </div>
+
+                        <div class="card bg-light border-0 p-3 mb-3">
+                            <div class="fw-bold text-primary mb-2"><i class="fa-solid fa-users me-1"></i> รายชื่อผู้เข้าแข่งขัน</div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <strong>ผู้เข้าแข่งขันคนที่ 1:</strong><br>
+                                    ${item.m1Name || '-'}<br>
+                                    <small class="text-muted">ชั้น: ${item.m1Class || '-'} | เบอร์โทร: ${item.m1Phone || '-'}</small>
                                 </div>
-                                <div>
-                                    <h6 class="fw-bold mb-0 text-dark" style="font-size:0.95rem;">${studentName}</h6>
-                                    <small class="text-muted">นักเรียน ม.4/3</small>
+                                <div class="col-md-6">
+                                    <strong>ผู้เข้าแข่งขันคนที่ 2:</strong><br>
+                                    ${item.m2Name || '-'}<br>
+                                    <small class="text-muted">ชั้น: ${item.m2Class || '-'} | เบอร์โทร: ${item.m2Phone || '-'}</small>
                                 </div>
                             </div>
                         </div>
-                    `;
-                });
-                container.innerHTML = html;
-            });
-        }
 
-        function exportToCSV() {
-            if (dutyReports.length === 0) {
-                Swal.fire('ไม่มีข้อมูล', 'ไม่มีรายงานสำหรับการส่งออก', 'info');
-                return;
+                        <div class="d-flex justify-content-between align-items-center text-muted small mt-4 pt-3 border-top">
+                            <span>สถานะ: <strong class="text-success">ลงทะเบียนสมบูรณ์</strong></span>
+                            <span>กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี</span>
+                        </div>
+                    </div>
+                `;
+
+                $('#receiptModalBody').html(html);
+                const modalEl = document.getElementById('receiptModal');
+                if (modalEl && typeof bootstrap !== 'undefined') {
+                    const receiptModal = new bootstrap.Modal(modalEl);
+                    receiptModal.show();
+                }
+            } catch(e) {
+                console.error("Receipt modal error:", e);
             }
-
-            let csv = '\uFEFF';
-            csv += 'รหัส,วันที่,ประจำวัน,ช่วงเวลา,จำนวนคนเรียบร้อย,รวมนักเรียนทั้งหมด,จุดทำความสะอาด,หมายเหตุ\n';
-
-            dutyReports.forEach(r => {
-                const areaText = Array.isArray(r.areas) ? r.areas.join(';') : r.areas;
-                csv += `"${r.id}","${r.date}","${r.dayOfWeek}","${r.shift}","${r.completedCount}","${r.totalCount}","${areaText}","${r.remarks || ''}"\n`;
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `Duty_Report_Class4-3_${getLocalDateString()}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         }
 
-        function syncData() {
-            const icon = document.getElementById('sync-icon');
-            icon.classList.add('fa-spin');
-            loadInitialData();
-            setTimeout(() => {
-                icon.classList.remove('fa-spin');
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'ซิงค์ข้อมูลล่าสุดเรียบร้อย',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            }, 600);
+        function printReceipt() {
+            window.print();
         }
     </script>
 </body>
