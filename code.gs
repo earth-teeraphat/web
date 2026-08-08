@@ -1,249 +1,154 @@
+// ================================================================
+// ระบบรับสมัครผู้เข้าแข่งขันโปรแกรมคอมพิวเตอร์ โรงเรียนหล่มสักวิทยาคม
+// ไฟล์ Backend: Code.gs (สำหรับวางใน Google Apps Script Editor)
+// ================================================================
 
-/**
- * ==============================================================================
- * ระบบรายงานการทำเวรประจำวัน ม.4/3 โรงเรียนหล่มสักวิทยาคม (Google Apps Script Backend)
- * ==============================================================================
- * คำแนะนำการใช้งาน:
- * 1. นำโค้ดนี้ไปวางในไฟล์ Code.gs บน Google Apps Script
- * 2. ระบุ FOLDER_ID ของ Google Drive สำหรับเก็บรูปภาพ
- * 3. ทำการ Deploy เป็น Web App (Execute as: Me, Who has access: Anyone)
- */
+const SPREADSHEET_ID = "1M0-mUV462rwAvCOKxaXFRUGXuKNQR3Bj0FzKXddDqTs";
 
-// Global Configuration Variables
-const CONFIG = {
-  SHEET_ID: "17dS7KQME0t0KLdw1RUKsKwfFm3sov9lz0vFyo4rswws",       // ชื่อชีตสำหรับบันทึกข้อมูล
-  FOLDER_ID: "1o9i_Vc1EnD_i3YAUq6H30DEKznJ7vYeA",                     // หากต้องการกำหนด Google Drive Folder ID เจาะจง ให้ใส่ตรงนี้ (ถ้าว่างไว้ระบบจะสร้างโฟลเดอร์ให้อัตโนมัติ)
-  FOLDER_NAME: "" // ชื่อโฟลเดอร์สำรองหากไม่ได้ระบุ ID
-};
+// กำหนดช่วงเวลาเปิดรับสมัคร (4 - 17 สิงหาคม พ.ศ. 2569)
+const REG_START_DATE = new Date('2026-08-04T00:00:00+07:00');
+const REG_END_DATE = new Date('2026-08-17T23:59:59+07:00');
 
-/**
- * ฟังก์ชันหลักในการแสดงผลหน้าเว็บ HTML (Web App Entry Point)
- */
+function isRegistrationOpen() {
+  const now = new Date();
+  return now >= REG_START_DATE && now <= REG_END_DATE;
+}
+
 function doGet(e) {
-  try {
-    return HtmlService.createTemplateFromFile('index')
-      .evaluate()
-      .setTitle('ระบบรายงานการทำเวรประจำวัน ม.4/3 โรงเรียนหล่มสักวิทยาคม')
-      .addMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  } catch (err) {
-    return HtmlService.createHtmlOutput("เกิดข้อผิดพลาดในการโหลดระบบ: " + err.toString());
-  }
+  return HtmlService.createHtmlOutputFromFile('index')
+      .setTitle('กิจกรรมสัปดาห์วิทยาศาสตร์ (การแข่งขันด้านเทคโนโลยี) โรงเรียนหล่มสักวิทยาคม')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
-/**
- * รองรับการส่งข้อมูลผ่าน Web API POST (สำหรับกรณีการเชื่อมต่อจากภายนอก)
- */
-function doPost(e) {
+function initSheet() {
+  let ss;
   try {
-    const data = JSON.parse(e.postData.contents);
-    const result = saveDutyReport(data);
-    
-    return ContentService.createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "error",
-      message: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  } catch(e) {
+    ss = SpreadsheetApp.getActiveSpreadsheet();
   }
-}
-
-/**
- * บันทึกรายงานการทำเวรลง Google Sheet และอัปโหลดรูปภาพลง Google Drive
- * @param {Object} data ข้อมูลรายงานที่ส่งมาจาก Frontend
- * @returns {Object} ผลลัพธ์สถานะการทำงาน
- */
-function saveDutyReport(data) {
-  try {
-    const sheet = getOrCreateSheet();
-    let imageUrl = "";
-
-    // 1. จัดการอัปโหลดรูปภาพไปยัง Google Drive
-    if (data.imageData && data.imageData.includes("base64,")) {
-      imageUrl = uploadImageToDrive(data.imageData, data.date, data.dayOfWeek, data.shift);
-    }
-
-    // 2. แปลงรายการสถานะนักเรียนเป็นข้อความ JSON
-    const studentStatusJson = JSON.stringify(data.studentStatuses || []);
-    const areasString = Array.isArray(data.areas) ? data.areas.join(", ") : (data.areas || "");
-
-    // 3. เพิ่มข้อมูลลงในแถวใหม่ของ Google Sheet
-    const recordId = "REP-" + Date.now();
-    sheet.appendRow([
-      recordId,
-      new Date(),                  // วันเวลาที่บันทึก
-      data.date,                   // วันที่ปฏิบัติหน้าที่
-      data.dayOfWeek,              // วันประจำสัปดาห์
-      data.shift,                  // ช่วงเวลา (เช้า/เย็น)
-      data.completedCount || 0,    // จำนวนคนที่ทำเรียบร้อย
-      data.totalCount || 0,        // จำนวนนักเรียนเวรทั้งหมด
-      studentStatusJson,          // รายละเอียดการเช็คชื่อรายบุคคล (JSON)
-      areasString,                // บริเวณที่ทำความสะอาด
-      imageUrl,                   // ลิงก์รูปภาพใน Google Drive
-      data.remarks || ""          // หมายเหตุ
-    ]);
-
-    return {
-      status: "success",
-      message: "บันทึกรายงานการทำเวรสำเร็จเรียบร้อยแล้ว",
-      id: recordId,
-      imageUrl: imageUrl
-    };
-
-  } catch (err) {
-    Logger.log("Error in saveDutyReport: " + err.toString());
-    return {
-      status: "error",
-      message: "เกิดข้อผิดพลาดฝั่ง Server: " + err.toString()
-    };
-  }
-}
-
-/**
- * ดึงรายการประวัติการทำเวรทั้งหมดจาก Google Sheet
- * @returns {Array} รายการบันทึกเวรทั้งหมด
- */
-function getDutyReports() {
-  try {
-    const sheet = getOrCreateSheet();
-    const data = sheet.getDataRange().getValues();
-    
-    // หากมีแค่ Header
-    if (data.length <= 1) {
-      return [];
-    }
-
-    const reports = [];
-    // ข้ามแถวที่ 0 (Header)
-    for (let i = 1; i < data.length; i++) {
-      const row = data[i];
-      if (!row[0]) continue; // ข้ามแถวว่าง
-
-      let studentStatuses = [];
-      try {
-        studentStatuses = JSON.parse(row[7]);
-      } catch (e) {
-        studentStatuses = [];
-      }
-
-      reports.push({
-        id: row[0],
-        timestamp: row[1] ? new Date(row[1]).toLocaleString('th-TH') : '',
-        date: row[2] ? formatDateString(row[2]) : '',
-        dayOfWeek: row[3] || '',
-        shift: row[4] || '',
-        completedCount: Number(row[5]) || 0,
-        totalCount: Number(row[6]) || 0,
-        studentStatuses: studentStatuses,
-        areas: row[8] ? row[8].toString().split(', ') : [],
-        imageUrl: row[9] || '',
-        remarks: row[10] || ''
-      });
-    }
-
-    // เรียงลำดับจากล่าสุดไปเก่าสุด
-    return reports.reverse();
-
-  } catch (err) {
-    Logger.log("Error in getDutyReports: " + err.toString());
-    return [];
-  }
-}
-
-/**
- * ฟังก์ชันช่วยแปลงภาพ Base64 และบันทึกลงใน Google Drive
- */
-function uploadImageToDrive(base64Data, date, day, shift) {
-  try {
-    const folder = getDriveFolder();
-    
-    // ดึงประเภทไฟล์และข้อมูล Base64
-    const splitData = base64Data.split("base64,");
-    const contentType = splitData[0].split(":")[1].split(";")[0];
-    const decodedData = Utilities.base64Decode(splitData[1]);
-    
-    const fileName = `เวร_${day}_${date}_${shift.includes("เช้า") ? "เช้า" : "เย็น"}_${Date.now()}.jpg`;
-    const blob = Utilities.newBlob(decodedData, contentType, fileName);
-    
-    // สร้างไฟล์ใน Drive
-    const file = folder.createFile(blob);
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    
-    // คืนค่า Direct CDN Image URL เพื่อให้ <img> แสดงผลได้โดยตรง
-    return "https://lh3.googleusercontent.com/d/" + file.getId();
-  } catch (e) {
-    Logger.log("Image upload error: " + e.toString());
-    return "";
-  }
-}
-
-/**
- * ตรวจสอบและดึงชีตสำหรับเก็บข้อมูล หากยังไม่มีจะสร้างขึ้นใหม่อัตโนมัติพร้อม Header
- */
-function getOrCreateSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
-
+  
+  let sheet = ss.getSheetByName("Registrations");
   if (!sheet) {
-    sheet = ss.insertSheet(CONFIG.SHEET_NAME);
-    // สร้าง Header Column
+    sheet = ss.insertSheet("Registrations");
     const headers = [
-      "ID",
-      "วันเวลาที่บันทึก",
-      "วันที่ทำเวร",
-      "วันประจำสัปดาห์",
-      "ช่วงเวลา",
-      "จำนวนที่ทำเรียบร้อย",
-      "จำนวนเวรทั้งหมด",
-      "สถานะการเช็คชื่อ (JSON)",
-      "บริเวณที่ทำความสะอาด",
-      "ลิงก์รูปภาพ Drive",
-      "หมายเหตุ"
+      "รหัสอ้างอิง", "วันที่สมัคร", "รายการแข่งขัน", "รหัสหมวดย่อย",
+      "ผู้สมัคร 1", "ชั้น ม.1", "เบอร์ ม.1",
+      "ผู้สมัคร 2", "ชั้น ม.2", "เบอร์ ม.2", "สถานะ"
     ];
-    sheet.appendRow(headers);
-    
-    // ตกแต่ง Header
-    const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground("#1e1b4b")
-               .setFontColor("#ffffff")
-               .setFontWeight("bold")
-               .setHorizontalAlignment("center");
-    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, headers.length)
+         .setValues([headers])
+         .setFontWeight("bold")
+         .setBackground("#4f46e5")
+         .setFontColor("#ffffff");
   }
-
   return sheet;
 }
 
-/**
- * ดึงโฟลเดอร์ Google Drive หรือสร้างใหม่หากไม่มี
- */
-function getDriveFolder() {
-  if (CONFIG.FOLDER_ID && CONFIG.FOLDER_ID.trim() !== "") {
-    try {
-      return DriveApp.getFolderById(CONFIG.FOLDER_ID);
-    } catch (e) {
-      Logger.log("Folder ID ไม่ถูกต้อง กำลังใช้โฟลเดอร์สำรอง...");
+function getQuotaStatus() {
+  const sheet = initSheet();
+  const data = sheet.getDataRange().getValues();
+  const counts = {};
+  
+  for (let i = 1; i < data.length; i++) {
+    const subCatKey = data[i][3];
+    if (subCatKey) {
+      counts[subCatKey] = (counts[subCatKey] || 0) + 1;
     }
   }
+  return counts;
+}
 
-  const folders = DriveApp.getFoldersByName(CONFIG.FOLDER_NAME);
-  if (folders.hasNext()) {
-    return folders.next();
-  } else {
-    return DriveApp.createFolder(CONFIG.FOLDER_NAME);
+function saveRegistration(payload) {
+  try {
+    // 1. ตรวจสอบช่วงเวลาเปิดรับสมัคร
+    if (!isRegistrationOpen()) {
+      return { 
+        success: false, 
+        message: "ไม่อยู่ในช่วงเวลาเปิดรับสมัคร (เปิดรับสมัครวันที่ 4 - 17 สิงหาคม 2569)" 
+      };
+    }
+
+    // 2. ตรวจสอบโควตาคงเหลือ
+    const sheet = initSheet();
+    const currentCounts = getQuotaStatus();
+    const currentRegistered = currentCounts[payload.subCategoryId] || 0;
+    
+    if (currentRegistered >= payload.maxLimit) {
+      return { 
+        success: false, 
+        message: "ขออภัย รายการแข่งขันนี้มีผู้สมัครเต็มจำนวนโควตาแล้ว!" 
+      };
+    }
+
+    // 3. สร้างรหัสอ้างอิงและบันทึกข้อมูล
+    const regId = "LSK-COMP-" + Math.floor(100000 + Math.random() * 900000);
+    const timestamp = new Date();
+
+    const rowData = [
+      regId,
+      timestamp,
+      payload.subCategoryName,
+      payload.subCategoryId,
+      payload.m1Prefix + payload.m1Name,
+      payload.m1Class,
+      payload.m1Phone,
+      payload.m2Prefix + payload.m2Name,
+      payload.m2Class,
+      payload.m2Phone,
+      "อนุมัติแล้ว"
+    ];
+
+    sheet.appendRow(rowData);
+
+    return {
+      success: true,
+      regId: regId,
+      message: "ลงทะเบียนเรียบร้อยแล้ว!"
+    };
+
+  } catch (err) {
+    return { success: false, message: "เกิดข้อผิดพลาด: " + err.toString() };
   }
 }
 
-/**
- * แปลงวันที่เป็น YYYY-MM-DD
- */
-function formatDateString(d) {
-  if (d instanceof Date) {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+function getAllRegistrations() {
+  const sheet = initSheet();
+  const data = sheet.getDataRange().getValues();
+  const results = [];
+  
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (!row[0]) continue; // ข้ามแถวว่าง
+
+    let formattedDate = "";
+    try {
+      const d = new Date(row[1]);
+      if (!isNaN(d.getTime())) {
+        formattedDate = Utilities.formatDate(d, "GMT+7", "dd/MM/yyyy HH:mm");
+      } else {
+        formattedDate = String(row[1] || "");
+      }
+    } catch(e) {
+      formattedDate = String(row[1] || "");
+    }
+
+    results.push({
+      regId: String(row[0]),
+      timestamp: formattedDate,
+      subCategoryName: String(row[2] || ""),
+      subCategoryId: String(row[3] || ""),
+      m1Name: String(row[4] || ""),
+      m1Class: String(row[5] || ""),
+      m1Phone: String(row[6] || ""),
+      m2Name: String(row[7] || ""),
+      m2Class: String(row[8] || ""),
+      m2Phone: String(row[9] || ""),
+      status: String(row[10] || "อนุมัติแล้ว")
+    });
   }
-  return d.toString().split('T')[0];
+
+  // เรียงลำดับรายการล่าสุดขึ้นก่อน
+  return results.reverse();
 }
