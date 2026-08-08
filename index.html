@@ -1,1253 +1,874 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="h-full bg-slate-950 text-slate-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>กิจกรรมสัปดาห์วิทยาศาสตร์ (การแข่งขันด้านเทคโนโลยี) - โรงเรียนหล่มสักวิทยาคม</title>
-
-    <!-- Google Fonts: Kanit -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
-
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <title>GAS & Web App Studio - Frontend & Database Generator</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous">
-    
-    <!-- SweetAlert2 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" crossorigin="anonymous">
-    
-    <!-- DataTables Bootstrap 5 CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" crossorigin="anonymous">
-
     <style>
-        :root {
-            --primary-color: #4f46e5;
-            --primary-hover: #4338ca;
-            --secondary-color: #06b6d4;
-            --dark-bg: #0f172a;
-            --card-border: #e2e8f0;
-            --body-bg: #f8fafc;
-            --text-dark: #1e293b;
+        body { font-family: 'Kanit', sans-serif; }
+        code, pre, .font-mono { font-family: 'Fira Code', monospace; }
+        .glass {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-
-        body {
-            font-family: 'Kanit', sans-serif;
-            background-color: var(--body-bg);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        .code-scroll::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-
-        .navbar-custom {
-            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        .code-scroll::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
         }
-
-        .hero-section {
-            background: linear-gradient(135deg, #312e81 0%, #4f46e5 50%, #0284c7 100%);
-            color: white;
-            padding: 2.5rem 1rem;
-            border-radius: 0 0 2rem 2rem;
-            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);
-            margin-bottom: 2rem;
+        .code-scroll::-webkit-scrollbar-track {
+            background: #020617;
         }
-
-        .glass-card {
-            background: #ffffff;
-            border-radius: 1.25rem;
-            border: 1px solid var(--card-border);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.03);
-            transition: all 0.3s ease;
-        }
-
-        .glass-card:hover {
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            transform: translateY(-2px);
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-            transition: all 0.3s ease;
-        }
-
-        .status-dot.online {
-            background-color: #22c55e;
-            box-shadow: 0 0 8px #22c55e;
-            animation: pulse-green 2s infinite;
-        }
-
-        .status-dot.offline {
-            background-color: #3b82f6;
-            box-shadow: 0 0 6px #3b82f6;
-        }
-
-        .status-dot.error {
-            background-color: #ef4444;
-            box-shadow: 0 0 8px #ef4444;
-        }
-
-        @keyframes pulse-green {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-        }
-
-        .category-card {
-            border-left: 5px solid var(--primary-color);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .category-card.full {
-            border-left-color: #ef4444;
-            background-color: #fef2f2;
-        }
-
-        .badge-seats {
-            font-size: 0.85rem;
-            padding: 0.4em 0.8em;
-            border-radius: 20px;
-        }
-
-        .form-control, .form-select {
-            border-radius: 0.75rem;
-            padding: 0.65rem 1rem;
-            border: 1px solid #cbd5e1;
-            font-size: 0.95rem;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
-        }
-
-        .section-header {
-            position: relative;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-        }
-
-        .section-header::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 50px;
-            height: 4px;
-            background: var(--primary-color);
-            border-radius: 2px;
-        }
-
-        .receipt-card {
-            background: #fff;
-            border: 2px dashed #cbd5e1;
-            border-radius: 1rem;
-            padding: 1.5rem;
-        }
-
-        .footer {
-            margin-top: auto;
-            background: #0f172a;
-            color: #94a3b8;
-            padding: 1.5rem 0;
-        }
-
-        @media print {
-            body * { visibility: hidden; }
-            #printableArea, #printableArea * { visibility: visible; }
-            #printableArea { position: absolute; left: 0; top: 0; width: 100%; }
-            .modal-footer, .btn-close { display: none !important; }
+        .custom-tab-active {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 20px -2px rgba(79, 70, 229, 0.5);
         }
     </style>
 </head>
-<body>
+<body class="min-h-full flex flex-col justify-between bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100">
 
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-3" href="#">
-                <div class="bg-white p-1 rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
-                    <i class="fa-solid fa-laptop-code text-primary fs-4"></i>
+    <!-- Navigation Header -->
+    <header class="border-b border-slate-800/80 glass sticky top-0 z-50 px-4 md:px-8 py-3.5 flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                <i class="fa-solid fa-code text-xl"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">GAS & Web App Studio</h1>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">v2.0 Pro</span>
                 </div>
-                <div>
-                    <div class="fw-bold fs-5 leading-tight">กิจกรรมสัปดาห์วิทยาศาสตร์ (การแข่งขันด้านเทคโนโลยี)</div>
-                    <div class="text-white-50 fs-7" style="font-size: 0.75rem;">โรงเรียนหล่มสักวิทยาคม</div>
-                </div>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+                <p class="text-xs text-indigo-400">ระบบสร้างโค้ด Database & Frontend อัตโนมัติ (Google Apps Script)</p>
+            </div>
+        </div>
+
+        <!-- Mode Navigation Tabs -->
+        <div class="flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800 text-xs font-medium">
+            <button id="navTab-db" onclick="switchMainTab('db')" class="px-3.5 py-2 rounded-xl transition-all flex items-center gap-2 custom-tab-active">
+                <i class="fa-solid fa-database text-indigo-300"></i>
+                <span>1. Database Schema</span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center gap-2 mt-3 mt-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link text-white active" id="tab-dashboard-btn" href="#dashboard" onclick="switchTab('dashboard')">
-                            <i class="fa-solid fa-chart-pie me-1"></i> โควตาการแข่งขัน
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" id="tab-register-btn" href="#register" onclick="switchTab('register')">
-                            <i class="fa-solid fa-pen-to-square me-1"></i> ลงทะเบียนสมัคร
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" id="tab-status-btn" href="#status" onclick="switchTab('status')">
-                            <i class="fa-solid fa-list-check me-1"></i> ตรวจสอบรายชื่อ
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <button id="navTab-frontend" onclick="switchMainTab('frontend')" class="px-3.5 py-2 rounded-xl text-slate-400 hover:text-white transition-all flex items-center gap-2">
+                <i class="fa-solid fa-palette text-cyan-400"></i>
+                <span>2. Frontend UI Generator</span>
+            </button>
+            <button id="navTab-ai" onclick="switchMainTab('ai')" class="px-3.5 py-2 rounded-xl text-slate-400 hover:text-white transition-all flex items-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                <span>3. AI Generator</span>
+            </button>
+            <button id="navTab-output" onclick="switchMainTab('output')" class="px-3.5 py-2 rounded-xl text-slate-400 hover:text-white transition-all flex items-center gap-2">
+                <i class="fa-solid fa-code-compare text-emerald-400"></i>
+                <span>4. Code & Live Preview</span>
+            </button>
         </div>
-    </nav>
+    </header>
 
-    <div class="hero-section text-center">
-        <div class="container">
-            <span class="badge bg-white text-primary px-3 py-2 rounded-pill fw-semibold mb-2 shadow-sm">
-                <i class="fa-solid fa-trophy me-1 text-warning"></i> งานแข่งขันทักษะทางวิชาการคอมพิวเตอร์
-            </span>
-            <h1 class="fw-bold display-6 mb-2">กิจกรรมสัปดาห์วิทยาศาสตร์ (การแข่งขันด้านเทคโนโลยี)</h1>
-            <p class="lead opacity-90 mb-2">กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี โรงเรียนหล่มสักวิทยาคม</p>
-            
-            <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mt-3">
-                <div class="d-inline-flex align-items-center gap-2 bg-white text-dark px-3 py-2 rounded-pill shadow-sm border">
-                    <i class="fa-solid fa-calendar-days text-primary"></i>
-                    <span class="small fw-semibold text-dark">กำหนดการรับสมัคร: 4 - 17 สิงหาคม พ.ศ. 2569</span>
-                    <span id="regStatusBadge" class="badge bg-warning text-dark rounded-pill ms-1">กำลังตรวจสอบ...</span>
-                </div>
-                <div class="d-inline-flex align-items-center gap-2 bg-white text-dark px-3 py-2 rounded-pill shadow-sm border" title="สถานะการเชื่อมต่อฐานข้อมูล Google Sheets">
-                    <span id="dbStatusDot" class="status-dot bg-warning"></span>
-                    <span id="dbStatusText" class="small fw-semibold text-dark">ฐานข้อมูล: กำลังเชื่อมต่อ...</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Main Content Container -->
+    <main class="max-w-7xl w-full mx-auto p-4 md:p-8 flex-1">
 
-    <div class="container mb-5">
+        <!-- Custom Notification Toast Container -->
+        <div id="toastContainer" class="fixed top-20 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-        <div id="section-dashboard" class="tab-section">
-            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-                <div>
-                    <h3 class="section-header mb-1">สถานะโควตาการสมัครทั้งหมด</h3>
-                    <p class="text-muted mb-0">ตรวจสอบจำนวนทีมที่เปิดรับสมัครและสิทธิ์คงเหลือแต่ละรายการ</p>
-                </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="loadQuotaData()">
-                        <i class="fa-solid fa-arrows-rotate me-1"></i> รีเฟรชข้อมูล
-                    </button>
-                    <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="switchTab('register')">
-                        <i class="fa-solid fa-plus me-1"></i> สมัครแข่งขันเลย
-                    </button>
-                </div>
-            </div>
-
-            <!-- Stats Overview Cards -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="glass-card p-3 d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary fs-3">
-                            <i class="fa-solid fa-users"></i>
-                        </div>
-                        <div>
-                            <div class="text-muted small">จำนวนที่เปิดรับทั้งหมด</div>
-                            <div class="fs-4 fw-bold" id="total-capacity-count">50 ทีม</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="glass-card p-3 d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success fs-3">
-                            <i class="fa-solid fa-user-check"></i>
-                        </div>
-                        <div>
-                            <div class="text-muted small">สมัครแล้วทั้งหมด</div>
-                            <div class="fs-4 fw-bold text-success" id="total-registered-count">0 ทีม</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="glass-card p-3 d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning fs-3">
-                            <i class="fa-solid fa-chair"></i>
-                        </div>
-                        <div>
-                            <div class="text-muted small">โควตาคงเหลือรวม</div>
-                            <div class="fs-4 fw-bold text-warning" id="total-remaining-count">50 ทีม</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-4" id="quota-cards-grid">
-                <!-- Dynamically populated -->
-            </div>
-        </div>
-
-        <div id="section-register" class="tab-section d-none">
-            <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <div class="glass-card p-4 p-md-5">
-                        <div class="text-center mb-4">
-                            <h3 class="fw-bold text-primary mb-1">แบบฟอร์มลงทะเบียนเข้าแข่งขัน</h3>
-                            <p class="text-muted">กรอกข้อมูลผู้เข้าแข่งขันให้ครบถ้วนก่อนส่งข้อมูล</p>
-                        </div>
-
-                        <div id="regPeriodNotice" class="alert rounded-4 mb-4 d-none">
-                            <!-- Injected dynamically -->
-                        </div>
-
-                        <form id="registrationForm" onsubmit="handleFormSubmit(event)" class="needs-validation" novalidate>
-                            
-                            <!-- 1. Category Selection -->
-                            <div class="card bg-light border-0 rounded-4 p-3 p-md-4 mb-4">
-                                <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-trophy text-warning me-2"></i>1. เลือกประเภทการแข่งขัน</h5>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">รายการแข่งขัน <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="mainCategorySelect" required onchange="onMainCategoryChange()">
-                                            <option value="" selected disabled>-- กรุณาเลือกรายการแข่งขัน --</option>
-                                            <option value="1">1. การออกแบบสิ่งของเครื่องใช้ด้วยโปรแกรมคอมพิวเตอร์</option>
-                                            <option value="2">2. การสร้างการ์ตูนเรื่องสั้น (Comic Strip)</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">ระดับชั้น/กลุ่มการแข่งขัน <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="subCategorySelect" required onchange="checkSubcategoryQuota()">
-                                            <option value="" selected disabled>-- กรุณาเลือกรายการหลักก่อน --</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div id="quotaNotice" class="mt-3 d-none">
-                                    <!-- Dynamic notice -->
-                                </div>
-                            </div>
-
-                            <!-- 2. Student 1 Information -->
-                            <div class="card bg-light border-0 rounded-4 p-3 p-md-4 mb-4">
-                                <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-user-graduate text-success me-2"></i>2. ข้อมูลผู้เข้าแข่งขัน คนที่ 1</h5>
-                                <div class="row g-3">
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">คำนำหน้า <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="m1Prefix" required>
-                                            <option value="เด็กชาย">เด็กชาย</option>
-                                            <option value="เด็กหญิง">เด็กหญิง</option>
-                                            <option value="นาย">นาย</option>
-                                            <option value="นางสาว">นางสาว</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <label class="form-label fw-semibold">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="m1Name" placeholder="ชื่อ และ นามสกุล" required>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-semibold">ระดับชั้น/ห้อง <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="m1Class" placeholder="เช่น ม.1/2" required>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-semibold">เบอร์โทรศัพท์นักเรียน <span class="text-danger">*</span></label>
-                                        <input type="tel" class="form-control" id="m1Phone" placeholder="08X-XXX-XXXX" pattern="^0[0-9]{8,9}$" maxlength="10" required>
-                                        <div class="invalid-feedback">กรุณากรอกเบอร์โทรศัพท์ 9-10 หลักให้ถูกต้อง</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 3. Student 2 Information -->
-                            <div class="card bg-light border-0 rounded-4 p-3 p-md-4 mb-4">
-                                <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-user-graduate text-info me-2"></i>3. ข้อมูลผู้เข้าแข่งขัน คนที่ 2</h5>
-                                <div class="row g-3">
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">คำนำหน้า <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="m2Prefix" required>
-                                            <option value="เด็กชาย">เด็กชาย</option>
-                                            <option value="เด็กหญิง">เด็กหญิง</option>
-                                            <option value="นาย">นาย</option>
-                                            <option value="นางสาว">นางสาว</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <label class="form-label fw-semibold">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="m2Name" placeholder="ชื่อ และ นามสกุล" required>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-semibold">ระดับชั้น/ห้อง <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="m2Class" placeholder="เช่น ม.1/2" required>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-semibold">เบอร์โทรศัพท์นักเรียน <span class="text-danger">*</span></label>
-                                        <input type="tel" class="form-control" id="m2Phone" placeholder="08X-XXX-XXXX" pattern="^0[0-9]{8,9}$" maxlength="10" required>
-                                        <div class="invalid-feedback">กรุณากรอกเบอร์โทรศัพท์ 9-10 หลักให้ถูกต้อง</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex justify-content-end gap-3 mt-4">
-                                <button type="reset" class="btn btn-light px-4 rounded-pill" onclick="resetFormState()">
-                                    <i class="fa-solid fa-rotate-left me-1"></i> ล้างข้อมูล
-                                </button>
-                                <button type="submit" class="btn btn-primary px-5 rounded-pill fw-semibold shadow" id="btnSubmitForm">
-                                    <i class="fa-solid fa-paper-plane me-1"></i> ยืนยันการลงทะเบียน
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="section-status" class="tab-section d-none">
-            <div class="glass-card p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <!-- ==================================================================== -->
+        <!-- TAB 1: DATABASE SCHEMA BUILDER -->
+        <!-- ==================================================================== -->
+        <section id="sec-db" class="space-y-6">
+            <div class="glass rounded-2xl p-6 border border-slate-800 shadow-2xl space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-4">
                     <div>
-                        <h3 class="section-header mb-1">รายชื่อทีมที่ลงทะเบียนแข่งขัน</h3>
-                        <p class="text-muted mb-0">ตรวจสอบสถานะ ค้นหารายชื่อ หรือพิมพ์ใบยืนยันการลงทะเบียน</p>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-cubes text-indigo-400"></i> กำหนดโครงสร้างฐานข้อมูล (Database Schema)
+                        </h2>
+                        <p class="text-slate-400 text-sm mt-1">เลือกแม่แบบตั้งต้น หรือออกแบบตารางและคอลัมน์เพื่อนำไปเจเนอเรตทั้ง Backend และ Frontend</p>
                     </div>
-                    <div class="d-flex gap-2">
-                        <select class="form-select form-select-sm" id="tableFilterCategory" style="min-width: 220px;" onchange="filterStatusTable()">
-                            <option value="">-- แสดงทุกรายการแข่งขัน --</option>
-                        </select>
+                    
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="applyPreset('user_system')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl border border-slate-700 transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-users text-indigo-400"></i> ระบบสมาชิก
+                        </button>
+                        <button onclick="applyPreset('inventory')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl border border-slate-700 transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-boxes-stacked text-cyan-400"></i> ระบบคลังสินค้า
+                        </button>
+                        <button onclick="applyPreset('booking')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl border border-slate-700 transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-calendar-check text-emerald-400"></i> ระบบจองคิว
+                        </button>
+                        <button onclick="addNewTable()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> เพิ่มตารางใหม่
+                        </button>
                     </div>
                 </div>
 
-                <div class="table-responsive">
-                    <table id="teamsTable" class="table table-hover align-middle w-100">
-                        <thead class="table-light">
-                            <tr>
-                                <th>รหัสลงทะเบียน</th>
-                                <th>รายการแข่งขัน</th>
-                                <th>ผู้เข้าแข่งขัน คนที่ 1</th>
-                                <th>ผู้เข้าแข่งขัน คนที่ 2</th>
-                                <th>วันที่สมัคร</th>
-                                <th>สถานะ</th>
-                                <th>จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+                <!-- Tables List Container -->
+                <div id="tablesContainer" class="space-y-6"></div>
 
-    </div>
-
-    <div class="modal fade" id="receiptModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 rounded-4 shadow">
-                <div class="modal-header border-0 bg-primary text-white">
-                    <h5 class="modal-title fw-bold" id="receiptModalLabel">
-                        <i class="fa-solid fa-file-invoice me-2"></i>ใบยืนยันการลงทะเบียน
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4" id="receiptModalBody">
-                    <!-- Dynamic Receipt Content -->
-                </div>
-                <div class="modal-footer border-0 bg-light">
-                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิด</button>
-                    <button type="button" class="btn btn-primary rounded-pill px-4" onclick="printReceipt()">
-                        <i class="fa-solid fa-print me-1"></i> พิมพ์เอกสาร
+                <div class="flex justify-end pt-4 border-t border-slate-800">
+                    <button onclick="switchMainTab('frontend')" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2">
+                        ถัดไป: สร้างหน้า Frontend UI <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <footer class="footer text-center">
-        <div class="container">
-            <p class="mb-1 fw-semibold">กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี โรงเรียนหล่มสักวิทยาคม</p>
-            <p class="small mb-0 opacity-75">ระบบรับสมัครผู้เข้าแข่งขันโปรแกรมคอมพิวเตอร์ &copy; 2026 All Rights Reserved.</p>
-        </div>
+        <!-- ==================================================================== -->
+        <!-- TAB 2: FRONTEND UI GENERATOR -->
+        <!-- ==================================================================== -->
+        <section id="sec-frontend" class="hidden space-y-6">
+            <div class="glass rounded-2xl p-6 border border-slate-800 shadow-2xl space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-display text-cyan-400"></i> ตัวสร้างหน้าจอ Frontend UI อัตโนมัติ
+                    </h2>
+                    <p class="text-slate-400 text-sm mt-1">เลือกลักษณะการทำงานและรูปแบบของ UI ที่ต้องการ ระบบจะสร้างสคริปต์เชื่อมต่อกับ Google Sheets ให้อัตโนมัติ</p>
+                </div>
+
+                <!-- UI Component Selection Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Option 1: CRUD Table & Modal Form -->
+                    <div id="uiOpt-crud" onclick="selectUIType('crud')" class="p-5 rounded-2xl border-2 border-indigo-500 bg-indigo-500/10 cursor-pointer transition-all hover:border-indigo-400 space-y-3 relative">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-table-list"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-base">1. ตารางข้อมูล + CRUD Form</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">ตารางจัดการข้อมูล ค้นหา ตัวกรอง ปุ่มเพิ่ม/แก้ไข/ลบข้อมูลพร้อม Modal และระบบยืนยัน</p>
+                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">ยอดนิยม</span>
+                    </div>
+
+                    <!-- Option 2: Animated Login & Auth Screen -->
+                    <div id="uiOpt-login" onclick="selectUIType('login')" class="p-5 rounded-2xl border-2 border-slate-800 bg-slate-900/60 cursor-pointer transition-all hover:border-cyan-500 space-y-3 relative">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-base">2. ระบบล็อกอิน + แอนิเมชัน</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">หน้าล็อกอินสไตล์ Glassmorphism เอฟเฟกต์พื้นหลังเคลื่อนไหว พร้อมเช็กสิทธิ์จาก Sheets</p>
+                    </div>
+
+                    <!-- Option 3: Analytics Dashboard -->
+                    <div id="uiOpt-dashboard" onclick="selectUIType('dashboard')" class="p-5 rounded-2xl border-2 border-slate-800 bg-slate-900/60 cursor-pointer transition-all hover:border-emerald-500 space-y-3 relative">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-base">3. Dashboard สรุปผล</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">การ์ดสรุปตัวเลขสถิติ กราฟสรุปผลข้อมูล (Chart.js) และตารางรายการล่าสุด</p>
+                    </div>
+
+                    <!-- Option 4: Full Stack App -->
+                    <div id="uiOpt-full" onclick="selectUIType('full')" class="p-5 rounded-2xl border-2 border-slate-800 bg-slate-900/60 cursor-pointer transition-all hover:border-purple-500 space-y-3 relative">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-base">4. Full-Stack Web App</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">ระบบครบวงจร มี Sidebar เมนูนำทาง ล็อกอิน สรุป Dashboard และตารางจัดการข้อมูล</p>
+                    </div>
+                </div>
+
+                <!-- UI Configurations & Options Panel -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
+                    <!-- Left Config: Target Table & Theme -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-indigo-300 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders"></i> ตั้งค่าระบบและธีมหน้าจอ
+                        </h3>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">เลือกตารางฐานข้อมูลหลักที่ต้องการเชื่อมต่อ</label>
+                            <select id="uiTargetTable" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-indigo-500">
+                                <!-- Dynamic Options filled via JS -->
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">เลือกธีมสี UI (Color Theme)</label>
+                            <select id="uiColorTheme" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-indigo-500">
+                                <option value="indigo">Indigo Cyberpunk (มืดล้ำสมัย - น้ำเงินม่วง)</option>
+                                <option value="emerald">Emerald Modern (เขียวสดใส Clean)</option>
+                                <option value="sunset">Sunset Glow (ส้มชมพู หรูหรา)</option>
+                                <option value="ocean">Ocean Tech (ฟ้าคราม นุ่มนวล)</option>
+                                <option value="light">Clean Light (สว่าง เรียบง่าย)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Right Config: Features Toggles -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-indigo-300 flex items-center gap-2">
+                            <i class="fa-solid fa-toggle-on"></i> ฟีเจอร์เสริมบนหน้าเว็บ Frontend
+                        </h3>
+
+                        <div class="space-y-2.5 pt-1">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" id="featSearch" checked class="w-4 h-4 rounded text-indigo-600 bg-slate-900 border-slate-700 focus:ring-indigo-500">
+                                <span class="text-xs text-slate-300">ระบบค้นหาและกรองข้อมูลแบบ Real-time</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" id="featSweetAlert" checked class="w-4 h-4 rounded text-indigo-600 bg-slate-900 border-slate-700 focus:ring-indigo-500">
+                                <span class="text-xs text-slate-300">กล่องแจ้งเตือนสวยงาม (SweetAlert2 Integration)</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" id="featExportCSV" checked class="w-4 h-4 rounded text-indigo-600 bg-slate-900 border-slate-700 focus:ring-indigo-500">
+                                <span class="text-xs text-slate-300">ปุ่มส่งออกข้อมูลเป็น CSV/Excel</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" id="featPagination" checked class="w-4 h-4 rounded text-indigo-600 bg-slate-900 border-slate-700 focus:ring-indigo-500">
+                                <span class="text-xs text-slate-300">ระบบแบ่งหน้าตารางข้อมูล (Pagination)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between pt-4 border-t border-slate-800">
+                    <button onclick="switchMainTab('db')" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-sm rounded-xl border border-slate-700 transition-all">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> ย้อนกลับไป Schema
+                    </button>
+                    <button onclick="generateAllCode()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm rounded-xl shadow-lg shadow-emerald-600/30 transition-all flex items-center gap-2">
+                        สร้างโค้ดทั้งหมด (Generate Code) <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================================================================== -->
+        <!-- TAB 3: AI FRONTEND GENERATOR (GEMINI API) -->
+        <!-- ==================================================================== -->
+        <section id="sec-ai" class="hidden space-y-6">
+            <div class="glass rounded-2xl p-6 border border-slate-800 shadow-2xl space-y-6">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">AI Frontend Code Generator (Gemini Powered)</h2>
+                        <p class="text-slate-400 text-sm">อธิบายหน้าเว็บ Frontend หรือ UI ที่ต้องการ AI จะเขียนโค้ด HTML + Tailwind CSS + JS เชื่อม GAS ให้ทันที!</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-2">คำอธิบายหน้าเว็บที่ต้องการ (Prompt Description)</label>
+                        <textarea id="aiPromptInput" rows="4" placeholder="เช่น: สร้างหน้าฟอร์มเบิกอุปกรณ์สำนักงาน มีช่องกรอกชื่อ ผู้เบิก แผนก รายการอุปกรณ์ จำนวน เหตุผล พร้อมตารางแสดงรายการที่เคยเบิก ล่าสุดด้านล่าง" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500 code-scroll leading-relaxed"></textarea>
+                    </div>
+
+                    <!-- AI Preset Prompts -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs text-slate-400 font-semibold">ตัวอย่างคำสั่ง:</span>
+                        <button onclick="setAiPrompt('สร้างฟอร์มลงทะเบียนเข้าประชุม พร้อมช่องสแกน QR Code และแสดงสถิติผู้เข้าร่วม')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-amber-300/80 border border-slate-800 text-xs rounded-lg transition-all">
+                            📌 ฟอร์มลงทะเบียน
+                        </button>
+                        <button onclick="setAiPrompt('สร้างระบบแจ้งซ่อมคอมพิวเตอร์และอุปกรณ์ไอที มีดรอปดาวน์เลือกอาการเสีย ตารางติดตามสถานะงานซ่อม')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-amber-300/80 border border-slate-800 text-xs rounded-lg transition-all">
+                            🛠️ ระบบแจ้งซ่อม IT
+                        </button>
+                        <button onclick="setAiPrompt('สร้างหน้าจอตารางประเมินความพึงพอใจ บริการ พร้อมกราฟดาวคะแนนสรุป')" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-amber-300/80 border border-slate-800 text-xs rounded-lg transition-all">
+                            ⭐ ฟอร์มประเมินความพึงพอใจ
+                        </button>
+                    </div>
+
+                    <button id="btnAiGenerate" onclick="generateFrontendWithAI()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> ให้ AI เจเนอเรตโค้ดเดี๋ยวนี้
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================================================================== -->
+        <!-- TAB 4: CODE OUTPUT & LIVE PREVIEW -->
+        <!-- ==================================================================== -->
+        <section id="sec-output" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left Column: Generated Code Tabs (5 Cols) -->
+                <div class="lg:col-span-6 space-y-4">
+                    <div class="glass rounded-2xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col h-[650px]">
+                        
+                        <!-- File Switcher Header -->
+                        <div class="bg-slate-950/90 px-4 py-3 border-b border-slate-800 flex justify-between items-center flex-wrap gap-2">
+                            <div class="flex items-center gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-800">
+                                <button id="codeFileTab-html" onclick="switchCodeFile('html')" class="px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition-all">
+                                    Index.html (Frontend)
+                                </button>
+                                <button id="codeFileTab-gs" onclick="switchCodeFile('gs')" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all">
+                                    Code.gs (Backend)
+                                </button>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <button onclick="copyCurrentCode()" class="px-3 py-1.5 bg-indigo-600/80 hover:bg-indigo-600 text-white text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all">
+                                    <i class="fa-regular fa-copy"></i> <span id="copyBtnTxt">คัดลอกโค้ด</span>
+                                </button>
+                                <button onclick="downloadCodeFile()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg flex items-center gap-1.5 border border-slate-700 transition-all">
+                                    <i class="fa-solid fa-download"></i> ดาวน์โหลด
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Code Content Box -->
+                        <div class="flex-1 bg-slate-950 overflow-auto code-scroll p-4">
+                            <pre class="text-xs font-mono leading-relaxed text-emerald-400"><code id="codeViewerBox"></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Interactive Live Preview (6 Cols) -->
+                <div class="lg:col-span-6 space-y-4">
+                    <div class="glass rounded-2xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col h-[650px]">
+                        
+                        <!-- Live Preview Header -->
+                        <div class="bg-slate-950/90 px-4 py-3 border-b border-slate-800 flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span class="text-xs font-bold text-white">Live Frontend Preview</span>
+                            </div>
+
+                            <!-- Screen Size Switchers -->
+                            <div class="flex items-center gap-1 text-slate-400">
+                                <button onclick="setPreviewSize('100%')" title="Desktop View" class="p-1.5 hover:text-white rounded">
+                                    <i class="fa-solid fa-desktop text-xs"></i>
+                                </button>
+                                <button onclick="setPreviewSize('768px')" title="Tablet View" class="p-1.5 hover:text-white rounded">
+                                    <i class="fa-solid fa-tablet-button text-xs"></i>
+                                </button>
+                                <button onclick="setPreviewSize('375px')" title="Mobile View" class="p-1.5 hover:text-white rounded">
+                                    <i class="fa-solid fa-mobile-screen-button text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Preview Iframe Frame -->
+                        <div class="flex-1 bg-slate-900 flex justify-center items-center overflow-hidden p-2">
+                            <iframe id="previewIframe" class="w-full h-full rounded-xl bg-white transition-all shadow-xl" sandbox="allow-scripts allow-modals"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-slate-800/80 py-4 text-center text-xs text-slate-500 glass mt-auto">
+        GAS & Web App Studio &copy; 2026 | Google Apps Script Full-Stack Code Generator
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js" crossorigin="anonymous"></script>
-
     <script>
-        window.addEventListener('error', function(e) {
-            console.warn("Caught runtime script event:", e.message || e);
-        });
+        // Global Application State
+        let currentTab = 'db';
+        let currentUIType = 'crud';
+        let activeCodeFile = 'html';
+        let generatedHTMLCode = '';
+        let generatedGSCode = '';
 
-        // Registration Window Configuration (4 - 17 สิงหาคม พ.ศ. 2569)
-        const REG_START_DATE = new Date('2026-08-04T00:00:00+07:00');
-        const REG_END_DATE = new Date('2026-08-17T23:59:59+07:00');
-
-        function checkRegistrationWindow() {
-            const now = new Date();
-            if (now < REG_START_DATE) {
-                return {
-                    isOpen: false,
-                    status: 'BEFORE',
-                    badgeText: 'ยังไม่ถึงกำหนดเปิดรับสมัคร',
-                    badgeClass: 'bg-warning text-dark',
-                    noticeText: '<strong><i class="fa-solid fa-clock me-2"></i>ระบบยังไม่เปิดรับสมัคร:</strong> จะเปิดรับสมัครพร้อมกันตั้งแต่วันที่ 4 สิงหาคม 2569 เวลา 00:00 น. ถึงวันที่ 17 สิงหาคม 2569 เวลา 23:59 น.',
-                    noticeClass: 'alert-warning border-warning'
-                };
-            } else if (now > REG_END_DATE) {
-                return {
-                    isOpen: false,
-                    status: 'AFTER',
-                    badgeText: 'ปิดรับสมัครแล้ว',
-                    badgeClass: 'bg-danger text-white',
-                    noticeText: '<strong><i class="fa-solid fa-lock me-2"></i>ระบบปิดรับสมัครแล้ว:</strong> สิ้นสุดระยะเวลาเปิดรับสมัครแข่งขัน (4 - 17 สิงหาคม 2569)',
-                    noticeClass: 'alert-danger border-danger'
-                };
-            } else {
-                return {
-                    isOpen: true,
-                    status: 'OPEN',
-                    badgeText: 'กำลังเปิดรับสมัคร',
-                    badgeClass: 'bg-success text-white',
-                    noticeText: '<strong><i class="fa-solid fa-circle-check me-2"></i>เปิดรับสมัครอยู่ในช่วงเวลา:</strong> 4 - 17 สิงหาคม พ.ศ. 2569',
-                    noticeClass: 'alert-success border-success'
-                };
-            }
-        }
-
-        function updateRegistrationWindowUI() {
-            try {
-                const state = checkRegistrationWindow();
-                
-                $('#regStatusBadge')
-                    .removeClass('bg-warning bg-danger bg-success text-dark text-white')
-                    .addClass(state.badgeClass)
-                    .html(state.badgeText);
-
-                const noticeEl = $('#regPeriodNotice');
-                noticeEl.removeClass('d-none alert-warning alert-danger alert-success border-warning border-danger border-success')
-                        .addClass(state.noticeClass)
-                        .html(state.noticeText);
-
-                if (!state.isOpen) {
-                    $('#registrationForm input, #registrationForm select').prop('disabled', true);
-                    $('#btnSubmitForm').prop('disabled', true).html(`<i class="fa-solid fa-lock me-1"></i> ${state.badgeText}`);
-                } else {
-                    $('#registrationForm input, #registrationForm select').prop('disabled', false);
-                    $('#btnSubmitForm').prop('disabled', false).html('<i class="fa-solid fa-paper-plane me-1"></i> ยืนยันการลงทะเบียน');
-                }
-            } catch(e) {
-                console.error("Error updating date window UI:", e);
-            }
-        }
-
-        const COMPETITION_CONFIG = [
-            {
-                mainId: "1",
-                mainTitle: "1. การออกแบบสิ่งของเครื่องใช้ด้วยโปรแกรมคอมพิวเตอร์",
-                subcategories: [
-                    { id: "1-JUNIOR", name: "การออกแบบสิ่งของเครื่องใช้ฯ - มัธยมศึกษาตอนต้น", limit: 10, icon: "fa-cube" },
-                    { id: "1-SENIOR", name: "การออกแบบสิ่งของเครื่องใช้ฯ - มัธยมศึกษาตอนปลาย", limit: 10, icon: "fa-cubes" }
-                ]
-            },
-            {
-                mainId: "2",
-                mainTitle: "2. การสร้างการ์ตูนเรื่องสั้น (Comic Strip)",
-                subcategories: [
-                    { id: "2-M1", name: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 1", limit: 5, icon: "fa-palette" },
-                    { id: "2-M2", name: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 2", limit: 5, icon: "fa-palette" },
-                    { id: "2-M3", name: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 3", limit: 5, icon: "fa-palette" },
-                    { id: "2-M4", name: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 4", limit: 5, icon: "fa-paint-brush" },
-                    { id: "2-M5", name: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 5", limit: 5, icon: "fa-paint-brush" },
-                    { id: "2-M6", name: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 6", limit: 5, icon: "fa-paint-brush" }
-                ]
-            }
-        ];
-
-        let registrationData = [];
-        let dataTableInstance = null;
-
-        function isGasAvailable() {
-            return typeof google !== 'undefined' && 
-                   typeof google.script !== 'undefined' && 
-                   typeof google.script.run !== 'undefined';
-        }
-
-        $(document).ready(function() {
-            try {
-                initSampleSeedData();
-                updateRegistrationWindowUI();
-                loadQuotaData();
-                initFilterOptions();
-                initDataTable();
-            } catch (err) {
-                console.error("Initialization error:", err);
-            }
-        });
-
-        function initSampleSeedData() {
-            try {
-                const saved = localStorage.getItem('lsk_comp_regs');
-                if (saved) {
-                    registrationData = JSON.parse(saved);
-                    return;
-                }
-            } catch(e) {
-                console.warn("Could not load from localStorage:", e);
-            }
-
-            registrationData = [
+        // Default Presets Data Structure
+        const presets = {
+            user_system: [
                 {
-                    regId: "LSK-COMP-849102",
-                    timestamp: "04/08/2026 09:15",
-                    subCategoryId: "1-JUNIOR",
-                    subCategoryName: "การออกแบบสิ่งของเครื่องใช้ฯ - มัธยมศึกษาตอนต้น",
-                    m1Prefix: "เด็กชาย", m1Name: "เด็กชายกิตติพงษ์ มั่นคง", m1Class: "ม.2/1", m1Phone: "0891112222",
-                    m2Prefix: "เด็กหญิง", m2Name: "เด็กหญิงพิมพ์มาดา สุขใจ", m2Class: "ม.2/1", m2Phone: "0891113333",
-                    status: "อนุมัติแล้ว"
+                    name: "Users",
+                    description: "ตารางผู้ใช้งานและสมาชิก",
+                    columns: [
+                        { name: "User_ID", type: "STRING", primary: true },
+                        { name: "Username", type: "STRING", primary: false },
+                        { name: "Password", type: "PASSWORD", primary: false },
+                        { name: "FullName", type: "STRING", primary: false },
+                        { name: "Role", type: "STRING", primary: false },
+                        { name: "Created_At", type: "DATETIME", primary: false }
+                    ]
                 },
                 {
-                    regId: "LSK-COMP-901234",
-                    timestamp: "04/08/2026 10:20",
-                    subCategoryId: "2-M1",
-                    subCategoryName: "การสร้างการ์ตูนเรื่องสั้น - มัธยมศึกษาปีที่ 1",
-                    m1Prefix: "เด็กชาย", m1Name: "เด็กชายธนกฤต วิเศษ", m1Class: "ม.1/3", m1Phone: "0892223333",
-                    m2Prefix: "เด็กชาย", m2Name: "เด็กชายปณิธาน มีชัย", m2Class: "ม.1/3", m2Phone: "0892224444",
-                    status: "อนุมัติแล้ว"
+                    name: "Roles",
+                    description: "ตารางสิทธิ์การใช้งาน",
+                    columns: [
+                        { name: "Role_ID", type: "STRING", primary: true },
+                        { name: "Role_Name", type: "STRING", primary: false },
+                        { name: "Permissions", type: "STRING", primary: false }
+                    ]
                 }
-            ];
-            saveToLocalStorage();
-        }
-
-        function saveToLocalStorage() {
-            try {
-                localStorage.setItem('lsk_comp_regs', JSON.stringify(registrationData));
-            } catch (e) {
-                console.warn("LocalStorage save error:", e);
-            }
-        }
-
-        function updateDbStatus(state, message) {
-            try {
-                const dot = $('#dbStatusDot');
-                const text = $('#dbStatusText');
-                
-                dot.removeClass('online offline error bg-warning');
-                
-                if (state === 'online') {
-                    dot.addClass('online');
-                    text.html(`<i class="fa-solid fa-database me-1 text-success"></i> <span class="text-dark">ฐานข้อมูล: ${message || 'เชื่อมต่อ Google Sheets แล้ว'}</span>`);
-                } else if (state === 'offline') {
-                    dot.addClass('offline');
-                    text.html(`<i class="fa-solid fa-hard-drive me-1 text-info"></i> <span class="text-dark">ฐานข้อมูล: ${message || 'โหมดจำลอง (Local)'}</span>`);
-                } else if (state === 'error') {
-                    dot.addClass('error');
-                    text.html(`<i class="fa-solid fa-triangle-exclamation me-1 text-danger"></i> <span class="text-dark">ฐานข้อมูล: ${message || 'เชื่อมต่อขัดข้อง'}</span>`);
-                } else {
-                    dot.addClass('bg-warning');
-                    text.html('<span class="text-dark">ฐานข้อมูล: กำลังเชื่อมต่อ...</span>');
+            ],
+            inventory: [
+                {
+                    name: "Products",
+                    description: "ตารางรายการสินค้า",
+                    columns: [
+                        { name: "Product_Code", type: "STRING", primary: true },
+                        { name: "Product_Name", type: "STRING", primary: false },
+                        { name: "Category", type: "STRING", primary: false },
+                        { name: "Price", type: "NUMBER", primary: false },
+                        { name: "Quantity", type: "NUMBER", primary: false }
+                    ]
                 }
-            } catch(e) {
-                console.error("Error updating DB status UI:", e);
-            }
-        }
-
-        function switchTab(tabId) {
-            try {
-                $('.tab-section').addClass('d-none');
-                $('#section-' + tabId).removeClass('d-none');
-
-                $('.nav-link').removeClass('active');
-                $('#tab-' + tabId + '-btn').addClass('active');
-
-                if (tabId === 'dashboard') {
-                    loadQuotaData();
-                } else if (tabId === 'register') {
-                    updateRegistrationWindowUI();
-                } else if (tabId === 'status') {
-                    refreshDataTable();
-                    if (dataTableInstance) {
-                        setTimeout(() => {
-                            dataTableInstance.columns.adjust().responsive.recalc();
-                        }, 150);
-                    }
+            ],
+            booking: [
+                {
+                    name: "Bookings",
+                    description: "ตารางข้อมูลการจองคิว",
+                    columns: [
+                        { name: "Booking_ID", type: "STRING", primary: true },
+                        { name: "Customer_Name", type: "STRING", primary: false },
+                        { name: "Phone", type: "STRING", primary: false },
+                        { name: "Booking_Date", type: "DATE", primary: false },
+                        { name: "Status", type: "STRING", primary: false }
+                    ]
                 }
-            } catch(err) {
-                console.error("Error switching tab:", err);
+            ]
+        };
+
+        // Active Tables State
+        let currentTables = JSON.parse(JSON.stringify(presets.user_system));
+
+        function switchMainTab(tabId) {
+            currentTab = tabId;
+            ['db', 'frontend', 'ai', 'output'].forEach(id => {
+                document.getElementById(`sec-${id}`).classList.add('hidden');
+                document.getElementById(`navTab-${id}`).className = "px-3.5 py-2 rounded-xl text-slate-400 hover:text-white transition-all flex items-center gap-2";
+            });
+
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+            document.getElementById(`navTab-${tabId}`).className = "px-3.5 py-2 rounded-xl transition-all flex items-center gap-2 custom-tab-active";
+
+            if (tabId === 'frontend') {
+                updateTargetTableDropdown();
             }
         }
 
-        function loadQuotaData() {
-            if (isGasAvailable()) {
-                google.script.run
-                    .withSuccessHandler(function(counts) {
-                        updateDbStatus('online', 'เชื่อมต่อ Google Sheets เรียบร้อย');
-                        renderQuotaCards(counts || {});
-                    })
-                    .withFailureHandler(function(err) {
-                        console.error("GAS Quota fetch failed:", err);
-                        updateDbStatus('error', 'เชื่อมต่อ Google Sheets ล้มเหลว');
-                        renderQuotaCards({});
-                    })
-                    .getQuotaStatus();
-            } else {
-                updateDbStatus('offline', 'โหมดจำลอง (Local Storage)');
-                const counts = {};
-                (registrationData || []).forEach(item => {
-                    if (item && item.subCategoryId) {
-                        counts[item.subCategoryId] = (counts[item.subCategoryId] || 0) + 1;
-                    }
-                });
-                renderQuotaCards(counts);
-            }
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-3 rounded-xl border shadow-xl text-xs font-semibold flex items-center gap-2 transition-all duration-300 pointer-events-auto ${
+                type === 'success' ? 'bg-emerald-950/90 border-emerald-500/40 text-emerald-300' : 'bg-slate-900/90 border-indigo-500/40 text-indigo-300'
+            }`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
 
-        function renderQuotaCards(counts) {
-            try {
-                let gridHtml = '';
-                let totalCap = 0;
-                let totalReg = 0;
-                const windowState = checkRegistrationWindow();
+        function applyPreset(key) {
+            currentTables = JSON.parse(JSON.stringify(presets[key]));
+            renderTables();
+            showToast('ปรับใช้แม่แบบฐานข้อมูลเรียบร้อยแล้ว', 'success');
+        }
 
-                COMPETITION_CONFIG.forEach(group => {
-                    gridHtml += `<div class="col-12"><h5 class="fw-bold text-dark border-bottom pb-2 mt-2"><i class="fa-solid fa-layer-group text-primary me-2"></i>${group.mainTitle}</h5></div>`;
+        function renderTables() {
+            const container = document.getElementById('tablesContainer');
+            container.innerHTML = '';
 
-                    group.subcategories.forEach(sub => {
-                        const registered = counts[sub.id] || 0;
-                        const remaining = Math.max(0, sub.limit - registered);
-                        const isFull = remaining === 0;
-                        const isDisabled = isFull || !windowState.isOpen;
-                        const percentage = Math.min(100, Math.round((registered / sub.limit) * 100));
+            currentTables.forEach((table, tIdx) => {
+                const tableCard = document.createElement('div');
+                tableCard.className = 'glass p-5 rounded-2xl border border-slate-800 space-y-4';
 
-                        totalCap += sub.limit;
-                        totalReg += registered;
-
-                        let buttonLabel = 'สมัครตอนนี้ <i class="fa-solid fa-arrow-right ms-1"></i>';
-                        if (!windowState.isOpen) {
-                            buttonLabel = windowState.badgeText;
-                        } else if (isFull) {
-                            buttonLabel = 'สิทธิ์เต็ม';
-                        }
-
-                        gridHtml += `
-                            <div class="col-md-6 col-lg-4">
-                                <div class="glass-card p-3 category-card ${isFull ? 'full' : ''}">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="rounded-circle ${isFull ? 'bg-danger text-white' : 'bg-primary bg-opacity-10 text-primary'} p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                                <i class="fa-solid ${sub.icon}"></i>
-                                            </div>
-                                            <h6 class="fw-bold mb-0">${sub.name}</h6>
-                                        </div>
-                                    </div>
-                                    <div class="my-3">
-                                        <div class="d-flex justify-content-between small text-muted mb-1">
-                                            <span>จำนวนที่สมัครแล้ว: <strong>${registered}/${sub.limit} ทีม</strong></span>
-                                            <span class="${isFull ? 'text-danger fw-bold' : 'text-success'}">${isFull ? 'เต็มแล้ว' : 'ว่าง ' + remaining + ' ทีม'}</span>
-                                        </div>
-                                        <div class="progress" style="height: 8px;">
-                                            <div class="progress-bar ${isFull ? 'bg-danger' : (percentage > 75 ? 'bg-warning' : 'bg-primary')}" 
-                                                 role="progressbar" style="width: ${percentage}%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        ${isFull ? 
-                                            `<span class="badge bg-danger badge-seats"><i class="fa-solid fa-ban me-1"></i>เต็มแล้ว</span>` : 
-                                            `<span class="badge bg-success badge-seats"><i class="fa-solid fa-circle-check me-1"></i>เปิดรับสมัคร</span>`
-                                        }
-                                        <button class="btn btn-sm ${isDisabled ? 'btn-outline-secondary' : 'btn-outline-primary'} rounded-pill px-3" 
-                                                ${isDisabled ? 'disabled' : ''} 
-                                                onclick="selectCategoryAndRegister('${group.mainId}', '${sub.id}')">
-                                            ${buttonLabel}
-                                        </button>
-                                    </div>
-                                </div>
+                let columnsHTML = '';
+                table.columns.forEach((col, cIdx) => {
+                    columnsHTML += `
+                        <div class="flex flex-wrap md:flex-nowrap items-center gap-3 bg-slate-950/80 p-3 rounded-xl border border-slate-800/80">
+                            <div class="flex items-center gap-2 min-w-[120px]">
+                                <input type="checkbox" ${col.primary ? 'checked' : ''} onchange="togglePrimary(${tIdx}, ${cIdx})" class="w-4 h-4 rounded text-amber-500 bg-slate-900 border-slate-700">
+                                <span class="text-xs text-amber-400 font-semibold">Primary Key</span>
                             </div>
-                        `;
-                    });
+
+                            <input type="text" value="${col.name}" onchange="updateColumnName(${tIdx}, ${cIdx}, this.value)" placeholder="ชื่อคอลัมน์" class="flex-1 min-w-[150px] px-3 py-1.5 text-xs bg-slate-900 border border-slate-700 rounded-lg text-white font-mono focus:border-indigo-500 focus:outline-none">
+
+                            <select onchange="updateColumnType(${tIdx}, ${cIdx}, this.value)" class="min-w-[120px] px-3 py-1.5 text-xs bg-slate-900 border border-slate-700 rounded-lg text-slate-300 focus:border-indigo-500 focus:outline-none">
+                                <option value="STRING" ${col.type==='STRING'?'selected':''}>STRING (ข้อความ)</option>
+                                <option value="NUMBER" ${col.type==='NUMBER'?'selected':''}>NUMBER (ตัวเลข)</option>
+                                <option value="DATE" ${col.type==='DATE'?'selected':''}>DATE (วันที่)</option>
+                                <option value="DATETIME" ${col.type==='DATETIME'?'selected':''}>DATETIME (วันเวลา)</option>
+                                <option value="PASSWORD" ${col.type==='PASSWORD'?'selected':''}>PASSWORD (รหัสผ่าน)</option>
+                            </select>
+
+                            <button onclick="removeColumn(${tIdx}, ${cIdx})" class="p-2 text-slate-500 hover:text-red-400 transition-colors">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    `;
                 });
 
-                $('#quota-cards-grid').html(gridHtml);
-                $('#total-capacity-count').text(totalCap + " ทีม");
-                $('#total-registered-count').text(totalReg + " ทีม");
-                $('#total-remaining-count').text(Math.max(0, totalCap - totalReg) + " ทีม");
-            } catch(e) {
-                console.error("Error rendering quota cards:", e);
-            }
-        }
+                tableCard.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-sm">
+                                <i class="fa-solid fa-table"></i>
+                            </span>
+                            <div>
+                                <input type="text" value="${table.name}" onchange="updateTableName(${tIdx}, this.value)" class="bg-transparent font-bold text-white text-base focus:bg-slate-900 px-2 py-1 rounded border border-transparent focus:border-indigo-500 focus:outline-none">
+                            </div>
+                        </div>
+                        <button onclick="removeTable(${tIdx})" class="px-3 py-1 text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg border border-red-500/20 transition-all">
+                            <i class="fa-solid fa-trash"></i> ลบตาราง
+                        </button>
+                    </div>
 
-        function selectCategoryAndRegister(mainId, subId) {
-            try {
-                const windowState = checkRegistrationWindow();
-                if (!windowState.isOpen) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'ไม่อยู่ในช่วงเวลาเปิดรับสมัคร',
-                        text: 'การเปิดรับสมัครจะมีขึ้นตั้งแต่วันที่ 4 ถึง 17 สิงหาคม พ.ศ. 2569',
-                        confirmButtonText: 'รับทราบ',
-                        confirmButtonColor: '#4f46e5'
-                    });
-                    return;
-                }
+                    <div class="space-y-2">
+                        <label class="text-xs font-semibold text-slate-400">รายการคอลัมน์ (Columns)</label>
+                        ${columnsHTML}
+                    </div>
 
-                switchTab('register');
-                $('#mainCategorySelect').val(mainId).trigger('change');
-                setTimeout(() => {
-                    $('#subCategorySelect').val(subId).trigger('change');
-                }, 100);
-            } catch(e) {
-                console.error("Error selecting category:", e);
-            }
-        }
+                    <button onclick="addColumn(${tIdx})" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-indigo-400 text-xs font-semibold rounded-xl border border-dashed border-indigo-500/30 flex items-center justify-center gap-2 transition-all">
+                        <i class="fa-solid fa-plus text-[10px]"></i> เพิ่มคอลัมน์ใหม่
+                    </button>
+                `;
 
-        function onMainCategoryChange() {
-            try {
-                const mainId = $('#mainCategorySelect').val();
-                const subSelect = $('#subCategorySelect');
-                subSelect.empty().append('<option value="" selected disabled>-- กรุณาเลือกระดับชั้น/กลุ่มการแข่งขัน --</option>');
-
-                const group = COMPETITION_CONFIG.find(g => g.mainId === mainId);
-                if (group) {
-                    group.subcategories.forEach(sub => {
-                        subSelect.append(`<option value="${sub.id}">${sub.name} (รับสูงสุด ${sub.limit} ทีม)</option>`);
-                    });
-                }
-                $('#quotaNotice').addClass('d-none');
-                
-                const windowState = checkRegistrationWindow();
-                if (windowState.isOpen) {
-                    $('#btnSubmitForm').prop('disabled', false);
-                }
-            } catch(e) {
-                console.error("Error in onMainCategoryChange:", e);
-            }
-        }
-
-        function checkSubcategoryQuota() {
-            try {
-                const subId = $('#subCategorySelect').val();
-                if (!subId) return;
-
-                let subObj = null;
-                COMPETITION_CONFIG.forEach(g => {
-                    const found = g.subcategories.find(s => s.id === subId);
-                    if (found) subObj = found;
-                });
-
-                if (!subObj) return;
-
-                if (isGasAvailable()) {
-                    google.script.run
-                        .withSuccessHandler(function(counts) {
-                            const currentReg = (counts || {})[subId] || 0;
-                            evaluateQuotaState(subObj, currentReg);
-                        })
-                        .withFailureHandler(function(err) {
-                            const currentReg = registrationData.filter(r => r.subCategoryId === subId).length;
-                            evaluateQuotaState(subObj, currentReg);
-                        })
-                        .getQuotaStatus();
-                } else {
-                    const currentReg = registrationData.filter(r => r.subCategoryId === subId).length;
-                    evaluateQuotaState(subObj, currentReg);
-                }
-            } catch(e) {
-                console.error("Error checking quota:", e);
-            }
-        }
-
-        function evaluateQuotaState(subObj, registered) {
-            try {
-                const windowState = checkRegistrationWindow();
-                if (!windowState.isOpen) return;
-
-                const remaining = subObj.limit - registered;
-                const noticeDiv = $('#quotaNotice');
-
-                if (remaining <= 0) {
-                    noticeDiv.removeClass('d-none alert-success alert-warning').addClass('alert alert-danger rounded-4')
-                        .html(`<i class="fa-solid fa-triangle-exclamation me-2"></i> <strong>แจ้งเตือน:</strong> รายการ <u>${subObj.name}</u> มีผู้สมัครเต็มตามจำนวนที่กำหนดแล้ว (${subObj.limit}/${subObj.limit} ทีม)`);
-                    
-                    $('#btnSubmitForm').prop('disabled', true);
-
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'โควตาเต็มแล้ว!',
-                        text: `รายการ ${subObj.name} มีผู้สมัครครบเต็มจำนวน ${subObj.limit} ทีมแล้ว ไม่สามารถลงทะเบียนเพิ่มได้`,
-                        confirmButtonText: 'รับทราบ',
-                        confirmButtonColor: '#ef4444'
-                    });
-                } else {
-                    noticeDiv.removeClass('d-none alert-danger alert-warning').addClass('alert alert-success rounded-4')
-                        .html(`<i class="fa-solid fa-circle-check me-2"></i> สามารถสมัครได้: <u>${subObj.name}</u> คงเหลือสิทธิ์อีก <strong>${remaining}</strong> ทีม`);
-                    
-                    $('#btnSubmitForm').prop('disabled', false);
-                }
-            } catch(e) {
-                console.error("Error evaluating quota state:", e);
-            }
-        }
-
-        function handleFormSubmit(e) {
-            e.preventDefault();
-
-            try {
-                const windowState = checkRegistrationWindow();
-                if (!windowState.isOpen) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'ไม่สามารถลงทะเบียนได้',
-                        text: 'การลงทะเบียนเปิดรับเฉพาะวันที่ 4 ถึง 17 สิงหาคม พ.ศ. 2569 เท่านั้น',
-                        confirmButtonColor: '#ef4444'
-                    });
-                    return;
-                }
-
-                const form = document.getElementById('registrationForm');
-                if (!form.checkValidity()) {
-                    e.stopPropagation();
-                    form.classList.add('was-validated');
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'กรอกข้อมูลไม่ครบถ้วน',
-                        text: 'กรุณากรอกข้อมูลในช่องที่มีเครื่องหมาย * ให้ครบถ้วน',
-                        confirmButtonColor: '#4f46e5'
-                    });
-                    return;
-                }
-
-                const subId = $('#subCategorySelect').val();
-                let subObj = null;
-                COMPETITION_CONFIG.forEach(g => {
-                    const found = g.subcategories.find(s => s.id === subId);
-                    if (found) subObj = found;
-                });
-
-                if (!subObj) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'กรุณาเลือกรายการแข่งขัน',
-                        confirmButtonColor: '#4f46e5'
-                    });
-                    return;
-                }
-
-                const currentReg = registrationData.filter(r => r.subCategoryId === subId).length;
-                if (currentReg >= subObj.limit) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'ไม่สามารถลงทะเบียนได้',
-                        text: 'รายการนี้มีผู้สมัครเต็มจำนวนโควตาแล้ว!',
-                        confirmButtonColor: '#ef4444'
-                    });
-                    return;
-                }
-
-                Swal.fire({
-                    title: 'กำลังบันทึกข้อมูล...',
-                    text: 'โปรดรอสักครู่ ระบบกำลังจัดเก็บข้อมูลลงใน Google Sheet',
-                    allowOutsideClick: false,
-                    didOpen: () => { Swal.showLoading(); }
-                });
-
-                const payload = {
-                    subCategoryId: subId,
-                    subCategoryName: subObj.name,
-                    maxLimit: subObj.limit,
-                    m1Prefix: $('#m1Prefix').val(),
-                    m1Name: $('#m1Name').val().trim(),
-                    m1Class: $('#m1Class').val().trim(),
-                    m1Phone: $('#m1Phone').val().trim(),
-                    m2Prefix: $('#m2Prefix').val(),
-                    m2Name: $('#m2Name').val().trim(),
-                    m2Class: $('#m2Class').val().trim(),
-                    m2Phone: $('#m2Phone').val().trim()
-                };
-
-                const now = new Date();
-                const timeStr = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-                if (isGasAvailable()) {
-                    google.script.run
-                        .withSuccessHandler(function(res) {
-                            if (res && res.success) {
-                                const newRecord = {
-                                    regId: res.regId,
-                                    timestamp: timeStr,
-                                    ...payload,
-                                    m1Name: payload.m1Prefix + payload.m1Name,
-                                    m2Name: payload.m2Prefix + payload.m2Name,
-                                    status: "อนุมัติแล้ว"
-                                };
-                                registrationData.unshift(newRecord);
-                                saveToLocalStorage();
-                            }
-                            onSaveSuccess(res);
-                        })
-                        .withFailureHandler(onSaveError)
-                        .saveRegistration(payload);
-                } else {
-                    setTimeout(() => {
-                        const newRegId = "LSK-COMP-" + Math.floor(100000 + Math.random() * 900000);
-
-                        const record = {
-                            regId: newRegId,
-                            timestamp: timeStr,
-                            ...payload,
-                            m1Name: payload.m1Prefix + payload.m1Name,
-                            m2Name: payload.m2Prefix + payload.m2Name,
-                            status: "อนุมัติแล้ว"
-                        };
-
-                        registrationData.unshift(record);
-                        saveToLocalStorage();
-                        onSaveSuccess({ success: true, regId: newRegId });
-                    }, 600);
-                }
-            } catch(err) {
-                console.error("Error submitting form:", err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'เกิดข้อผิดพลาด',
-                    text: err.message || 'ไม่สามารถดำเนินการได้',
-                    confirmButtonColor: '#ef4444'
-                });
-            }
-        }
-
-        function onSaveSuccess(res) {
-            Swal.close();
-            if (res && res.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'ลงทะเบียนสำเร็จ!',
-                    html: `รหัสลงทะเบียนของคุณคือ: <h4 class="text-primary mt-2 fw-bold">${res.regId}</h4>`,
-                    confirmButtonText: 'ดูใบยืนยันการสมัคร',
-                    confirmButtonColor: '#4f46e5'
-                }).then(() => {
-                    resetFormState();
-                    loadQuotaData();
-                    switchTab('status');
-                    showReceiptModal(res.regId);
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'ไม่สามารถบันทึกได้',
-                    text: res ? res.message : 'เกิดข้อผิดพลาดไม่ทราบสาเหตุ',
-                    confirmButtonColor: '#ef4444'
-                });
-            }
-        }
-
-        function onSaveError(err) {
-            Swal.fire({
-                icon: 'error',
-                title: 'เกิดข้อผิดพลาดในการส่งข้อมูล',
-                text: err ? err.toString() : 'เกิดข้อผิดพลาดในการเชื่อมต่อ',
-                confirmButtonColor: '#ef4444'
+                container.appendChild(tableCard);
             });
         }
 
-        function resetFormState() {
-            try {
-                document.getElementById('registrationForm').reset();
-                document.getElementById('registrationForm').classList.remove('was-validated');
-                $('#subCategorySelect').empty().append('<option value="" selected disabled>-- กรุณาเลือกรายการหลักก่อน --</option>');
-                $('#quotaNotice').addClass('d-none');
-                
-                const windowState = checkRegistrationWindow();
-                if (windowState.isOpen) {
-                    $('#btnSubmitForm').prop('disabled', false);
+        function updateTableName(tIdx, val) { currentTables[tIdx].name = val.trim() || `Sheet${tIdx+1}`; }
+        function updateColumnName(tIdx, cIdx, val) { currentTables[tIdx].columns[cIdx].name = val.trim() || `Col_${cIdx+1}`; }
+        function updateColumnType(tIdx, cIdx, val) { currentTables[tIdx].columns[cIdx].type = val; }
+        function togglePrimary(tIdx, cIdx) { currentTables[tIdx].columns[cIdx].primary = !currentTables[tIdx].columns[cIdx].primary; renderTables(); }
+        function addColumn(tIdx) { currentTables[tIdx].columns.push({ name: `Column_${currentTables[tIdx].columns.length + 1}`, type: 'STRING', primary: false }); renderTables(); }
+        function removeColumn(tIdx, cIdx) { if(currentTables[tIdx].columns.length > 1) { currentTables[tIdx].columns.splice(cIdx, 1); renderTables(); } }
+        function addNewTable() { currentTables.push({ name: `DataSheet_${currentTables.length + 1}`, columns: [{ name: 'ID', type: 'STRING', primary: true }, { name: 'Name', type: 'STRING', primary: false }] }); renderTables(); }
+        function removeTable(tIdx) { if(currentTables.length > 1) { currentTables.splice(tIdx, 1); renderTables(); } }
+
+        function updateTargetTableDropdown() {
+            const select = document.getElementById('uiTargetTable');
+            select.innerHTML = '';
+            currentTables.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.name;
+                opt.textContent = `${t.name} (${t.columns.length} คอลัมน์)`;
+                select.appendChild(opt);
+            });
+        }
+
+        function selectUIType(type) {
+            currentUIType = type;
+            ['crud', 'login', 'dashboard', 'full'].forEach(t => {
+                const el = document.getElementById(`uiOpt-${t}`);
+                if (t === type) {
+                    el.className = "p-5 rounded-2xl border-2 border-indigo-500 bg-indigo-500/10 cursor-pointer transition-all hover:border-indigo-400 space-y-3 relative";
                 } else {
-                    $('#btnSubmitForm').prop('disabled', true);
+                    el.className = "p-5 rounded-2xl border-2 border-slate-800 bg-slate-900/60 cursor-pointer transition-all hover:border-slate-700 space-y-3 relative";
                 }
-            } catch(e) {
-                console.error("Reset form error:", e);
-            }
+            });
         }
 
-        function initFilterOptions() {
-            try {
-                const filter = $('#tableFilterCategory');
-                filter.empty().append('<option value="">-- แสดงทุกรายการแข่งขัน --</option>');
-                COMPETITION_CONFIG.forEach(g => {
-                    g.subcategories.forEach(s => {
-                        filter.append(`<option value="${s.name}">${s.name}</option>`);
-                    });
-                });
-            } catch(e) {
-                console.error("Filter init error:", e);
-            }
+        function generateAllCode() {
+            const targetTableName = document.getElementById('uiTargetTable').value || currentTables[0].name;
+            const selectedTable = currentTables.find(t => t.name === targetTableName) || currentTables[0];
+            const theme = document.getElementById('uiColorTheme').value;
+
+            // Generate Backend Google Apps Script (Code.gs)
+            generatedGSCode = generateGSBackend(selectedTable);
+
+            // Generate Frontend HTML (Index.html)
+            generatedHTMLCode = generateFrontendHTML(selectedTable, currentUIType, theme);
+
+            // Update View
+            switchCodeFile('html');
+            updatePreviewIframe(generatedHTMLCode);
+            switchMainTab('output');
+            showToast('สร้างโค้ดและไลฟ์พรีวิวเรียบร้อยแล้ว!', 'success');
         }
 
-        function initDataTable() {
-            try {
-                if ($.fn.DataTable.isDataTable('#teamsTable')) {
-                    $('#teamsTable').DataTable().destroy();
-                }
+        function generateGSBackend(table) {
+            return `/**
+ * ====================================================================
+ * AUTO-GENERATED GOOGLE APPS SCRIPT BACKEND (Code.gs)
+ * Table: ${table.name}
+ * ====================================================================
+ */
 
-                dataTableInstance = $('#teamsTable').DataTable({
-                    responsive: true,
-                    language: {
-                        search: "ค้นหาทีม/ผู้สมัคร:",
-                        lengthMenu: "แสดง _MENU_ รายการ",
-                        info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
-                        infoEmpty: "ไม่มีข้อมูล",
-                        zeroRecords: "ไม่พบข้อมูลทีมที่ลงทะเบียน",
-                        paginate: {
-                            first: "หน้าแรก",
-                            last: "หน้าสุดท้าย",
-                            next: "ถัดไป",
-                            previous: "ก่อนหน้า"
-                        }
-                    },
-                    order: []
-                });
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('Index')
+      .setTitle('${table.name} Management Web App')
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
 
-                refreshDataTable();
-            } catch(err) {
-                console.warn("DataTable deferred or error:", err);
-            }
+// Fetch All Records from Sheet
+function getSheetData() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("${table.name}");
+  if (!sheet) return { success: false, message: "Sheet not found" };
+
+  var data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return { success: true, headers: [], rows: [] };
+
+  var headers = data[0];
+  var rows = data.slice(1).map(function(row, idx) {
+    return { _rowIdx: idx + 2, data: row };
+  });
+
+  return { success: true, headers: headers, rows: rows };
+}
+
+// Save or Update Record
+function saveRecord(formData) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("${table.name}");
+  if (!sheet) return { success: false, message: "Sheet not found" };
+
+  var cols = ${JSON.stringify(table.columns.map(c => c.name))};
+  var rowValues = cols.map(function(c) { return formData[c] || ""; });
+
+  sheet.appendRow(rowValues);
+  return { success: true, message: "บันทึกข้อมูลเรียบร้อยแล้ว" };
+}
+
+// Delete Record
+function deleteRecord(rowIdx) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("${table.name}");
+  if (!sheet) return { success: false, message: "Sheet not found" };
+
+  sheet.deleteRow(rowIdx);
+  return { success: true, message: "ลบข้อมูลเรียบร้อยแล้ว" };
+}
+`;
         }
 
-        function refreshDataTable() {
-            if (isGasAvailable()) {
-                updateDbStatus('pending', 'กำลังดึงข้อมูลล่าสุด...');
-                google.script.run
-                    .withSuccessHandler(function(data) {
-                        if (data && data.length > 0) {
-                            registrationData = data;
-                            saveToLocalStorage();
-                        }
-                        updateDbStatus('online', `เชื่อมต่อ Google Sheets (${registrationData.length} รายการ)`);
-                        populateTableRows(registrationData);
-                    })
-                    .withFailureHandler(function(err) {
-                        console.error("GAS Table refresh error:", err);
-                        updateDbStatus('error', 'ไม่สามารถอ่านข้อมูลจาก Google Sheets ได้');
-                        populateTableRows(registrationData);
-                    })
-                    .getAllRegistrations();
-            } else {
-                updateDbStatus('offline', 'โหมดจำลอง (Local Storage)');
-                populateTableRows(registrationData);
-            }
-        }
+        function generateFrontendHTML(table, uiType, theme) {
+            const cols = table.columns;
+            const primaryCol = cols.find(c => c.primary) || cols[0];
 
-        function populateTableRows(data) {
-            if (!dataTableInstance) return;
+            let themeClasses = {
+                indigo: 'from-slate-950 via-slate-900 to-indigo-950 text-indigo-400 bg-indigo-600',
+                emerald: 'from-slate-950 via-slate-900 to-emerald-950 text-emerald-400 bg-emerald-600',
+                sunset: 'from-slate-950 via-slate-900 to-rose-950 text-rose-400 bg-rose-600',
+                ocean: 'from-slate-950 via-slate-900 to-cyan-950 text-cyan-400 bg-cyan-600',
+                light: 'from-slate-100 via-white to-slate-200 text-indigo-600 bg-indigo-600'
+            }[theme];
 
-            try {
-                dataTableInstance.clear();
-                (data || []).forEach(item => {
-                    if (!item || !item.regId) return;
-                    const member1 = `<div class="small fw-semibold">${item.m1Name || ''}</div><div class="small text-muted">ชั้น ${item.m1Class || ''} | <i class="fa-solid fa-phone me-1"></i>${item.m1Phone || ''}</div>`;
-                    const member2 = `<div class="small fw-semibold">${item.m2Name || ''}</div><div class="small text-muted">ชั้น ${item.m2Class || ''} | <i class="fa-solid fa-phone me-1"></i>${item.m2Phone || ''}</div>`;
-                    const badgeStatus = `<span class="badge bg-success rounded-pill px-3 py-1"><i class="fa-solid fa-circle-check me-1"></i>${item.status || 'อนุมัติแล้ว'}</span>`;
-                    const actions = `
-                        <button class="btn btn-sm btn-outline-primary rounded-circle" title="พิมพ์ใบสมัคร" onclick="showReceiptModal('${item.regId}')">
-                            <i class="fa-solid fa-print"></i>
-                        </button>
-                    `;
+            return `<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${table.name} Management</title>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"><\/script>
+    <style>
+        body { font-family: 'Kanit', sans-serif; }
+    </style>
+</head>
+<body class="min-h-full bg-gradient-to-br ${themeClasses} text-slate-100 p-4 md:p-8">
 
-                    dataTableInstance.row.add([
-                        `<span class="fw-bold text-primary">${item.regId || ''}</span>`,
-                        `<span class="small fw-semibold" data-search="${item.subCategoryName || ''}" data-order="${item.subCategoryName || ''}">${item.subCategoryName || ''}</span>`,
-                        member1,
-                        member2,
-                        `<span class="small text-muted">${item.timestamp || ''}</span>`,
-                        badgeStatus,
-                        actions
-                    ]);
-                });
-                dataTableInstance.draw();
+    <div class="max-w-6xl mx-auto space-y-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl">
+            <div>
+                <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-database"></i> ระบบจัดการ ${table.name}
+                </h1>
+                <p class="text-xs text-slate-400 mt-1">Google Apps Script & Web App Interface</p>
+            </div>
+            <button onclick="openAddModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow-lg transition-all flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i> เพิ่มข้อมูลใหม่
+            </button>
+        </div>
 
-                setTimeout(() => {
-                    dataTableInstance.columns.adjust().responsive.recalc();
-                }, 100);
-            } catch(e) {
-                console.error("Error populating table rows:", e);
-            }
-        }
+        <!-- Data Table -->
+        <div class="bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="ค้นหาข้อมูล..." class="px-4 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none w-64">
+                <span class="text-xs text-slate-400">ตารางฐานข้อมูล: <strong class="text-indigo-400">${table.name}</strong></span>
+            </div>
 
-        function filterStatusTable() {
-            try {
-                const val = $('#tableFilterCategory').val();
-                if (dataTableInstance) {
-                    if (val) {
-                        const escapedVal = val.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                        dataTableInstance.column(1).search(escapedVal, true, false).draw();
-                    } else {
-                        dataTableInstance.column(1).search('', false, true).draw();
-                    }
-                }
-            } catch(e) {
-                console.error("Filter table error:", e);
-            }
-        }
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800">
+                        <tr>
+                            ${cols.map(c => `<th class="px-4 py-3">${c.name}</th>`).join('')}
+                            <th class="px-4 py-3 text-right">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-800 text-slate-300">
+                        <!-- Sample Mock Rows for Preview -->
+                        <tr class="hover:bg-slate-800/50 transition-colors">
+                            ${cols.map((c, i) => `<td class="px-4 py-3 font-mono">${i === 0 ? 'REC-001' : 'ข้อมูลตัวอย่าง ' + (i+1)}</td>`).join('')}
+                            <td class="px-4 py-3 text-right">
+                                <button onclick="deleteRow(2)" class="p-1.5 text-slate-400 hover:text-red-400"><i class="fa-solid fa-trash-can"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-        function showReceiptModal(regId) {
-            try {
-                const item = registrationData.find(r => r.regId === regId);
-                if (!item) return;
-
-                const html = `
-                    <div class="receipt-card" id="printableArea">
-                        <div class="text-center mb-4 pb-3 border-bottom">
-                            <div class="fw-bold fs-4 text-primary">ใบยืนยันการลงทะเบียนเข้าแข่งขัน</div>
-                            <div class="text-muted fs-6">กิจกรรมสัปดาห์วิทยาศาสตร์ (การแข่งขันด้านเทคโนโลยี)</div>
-                            <div class="badge bg-primary px-3 py-2 mt-2">รหัสอ้างอิง: ${item.regId}</div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-sm-6">
-                                <strong class="text-muted d-block small">รายการแข่งขัน:</strong>
-                                <span class="fw-bold text-dark">${item.subCategoryName || '-'}</span>
+    <script>
+        function openAddModal() {
+            Swal.fire({
+                title: 'เพิ่มข้อมูล ${table.name}',
+                html: \`
+                    <div class="space-y-3 text-left">
+                        ${cols.map(c => `
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">${c.name}</label>
+                                <input id="swal-${c.name}" type="${c.type==='NUMBER'?'number':c.type==='DATE'?'date':'text'}" class="swal2-input w-full !m-0 text-xs" placeholder="${c.name}">
                             </div>
-                            <div class="col-sm-6">
-                                <strong class="text-muted d-block small">วันที่ลงทะเบียน:</strong>
-                                <span>${item.timestamp || '-'}</span>
-                            </div>
-                        </div>
-
-                        <div class="card bg-light border-0 p-3 mb-3">
-                            <div class="fw-bold text-primary mb-2"><i class="fa-solid fa-users me-1"></i> รายชื่อผู้เข้าแข่งขัน</div>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <strong>ผู้เข้าแข่งขันคนที่ 1:</strong><br>
-                                    ${item.m1Name || '-'}<br>
-                                    <small class="text-muted">ชั้น: ${item.m1Class || '-'} | เบอร์โทร: ${item.m1Phone || '-'}</small>
-                                </div>
-                                <div class="col-md-6">
-                                    <strong>ผู้เข้าแข่งขันคนที่ 2:</strong><br>
-                                    ${item.m2Name || '-'}<br>
-                                    <small class="text-muted">ชั้น: ${item.m2Class || '-'} | เบอร์โทร: ${item.m2Phone || '-'}</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center text-muted small mt-4 pt-3 border-top">
-                            <span>สถานะ: <strong class="text-success">ลงทะเบียนสมบูรณ์</strong></span>
-                            <span>กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี</span>
-                        </div>
+                        `).join('')}
                     </div>
-                `;
-
-                $('#receiptModalBody').html(html);
-                const modalEl = document.getElementById('receiptModal');
-                if (modalEl && typeof bootstrap !== 'undefined') {
-                    const receiptModal = new bootstrap.Modal(modalEl);
-                    receiptModal.show();
+                \`,
+                confirmButtonText: 'บันทึกข้อมูล',
+                showCancelButton: true,
+                cancelButtonText: 'ยกเลิก',
+                preConfirm: () => {
+                    let data = {};
+                    ${cols.map(c => `data['${c.name}'] = document.getElementById('swal-${c.name}').value;`).join('')}
+                    return data;
                 }
-            } catch(e) {
-                console.error("Receipt modal error:", e);
+            }).then((res) => {
+                if(res.isConfirmed) {
+                    Swal.fire('สำเร็จ', 'บันทึกข้อมูลเรียบร้อยแล้ว', 'success');
+                }
+            });
+        }
+
+        function deleteRow(idx) {
+            Swal.fire({
+                title: 'ยืนยันการลบ?',
+                text: 'คุณต้องการลบรายการนี้ใช่หรือไม่',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ลบข้อมูล'
+            }).then((res) => {
+                if(res.isConfirmed) Swal.fire('ลบแล้ว', 'ลบข้อมูลเรียบร้อยแล้ว', 'success');
+            });
+        }
+
+        function filterTable() {
+            let filter = document.getElementById('searchInput').value.toUpperCase();
+            let rows = document.querySelectorAll('#tableBody tr');
+            rows.forEach(row => {
+                let text = row.innerText.toUpperCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        }
+    <\/script>
+</body>
+</html>`;
+        }
+
+        function setAiPrompt(text) {
+            document.getElementById('aiPromptInput').value = text;
+        }
+
+        async function generateFrontendWithAI() {
+            const promptInput = document.getElementById('aiPromptInput').value.trim();
+            if(!promptInput) {
+                showToast('กรุณากรอกคำอธิบายหน้าเว็บที่ต้องการ', 'info');
+                return;
+            }
+
+            const btn = document.getElementById('btnAiGenerate');
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังเจเนอเรตโค้ดด้วย AI...`;
+            btn.disabled = true;
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const systemInstruction = "Act as a senior frontend engineer. Output ONLY clean, complete, runnable single-file HTML code with Tailwind CSS and FontAwesome script tags. No markdown formatting, no extra explanation text.";
+
+            const payload = {
+                contents: [{ parts: [{ text: promptInput }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                let code = result?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                code = code.replace(/```html/g, '').replace(/```/g, '').trim();
+
+                if (code) {
+                    generatedHTMLCode = code;
+                    switchCodeFile('html');
+                    updatePreviewIframe(generatedHTMLCode);
+                    switchMainTab('output');
+                    showToast('AI สร้างโค้ดสำเร็จแล้ว!', 'success');
+                } else {
+                    showToast('เกิดข้อผิดพลาดจากระบบ AI', 'info');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('เกิดข้อผิดพลาดในการเรียกใช้ AI API', 'info');
+            } finally {
+                btn.innerHTML = `<i class="fa-solid fa-bolt"></i> ให้ AI เจเนอเรตโค้ดเดี๋ยวนี้`;
+                btn.disabled = false;
             }
         }
 
-        function printReceipt() {
-            window.print();
+        function switchCodeFile(type) {
+            activeCodeFile = type;
+            const viewer = document.getElementById('codeViewerBox');
+            const tabHtml = document.getElementById('codeFileTab-html');
+            const tabGs = document.getElementById('codeFileTab-gs');
+
+            if (type === 'html') {
+                viewer.textContent = generatedHTMLCode || '<!-- กดปุ่ม Generate Code เพื่อสร้างโค้ด -->';
+                tabHtml.className = "px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition-all";
+                tabGs.className = "px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all";
+            } else {
+                viewer.textContent = generatedGSCode || '// กดปุ่ม Generate Code เพื่อสร้างโค้ด';
+                tabGs.className = "px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition-all";
+                tabHtml.className = "px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all";
+            }
         }
+
+        function updatePreviewIframe(htmlContent) {
+            const iframe = document.getElementById('previewIframe');
+            iframe.srcdoc = htmlContent;
+        }
+
+        function setPreviewSize(width) {
+            const iframe = document.getElementById('previewIframe');
+            iframe.style.width = width;
+        }
+
+        function copyCurrentCode() {
+            const codeText = activeCodeFile === 'html' ? generatedHTMLCode : generatedGSCode;
+            const textarea = document.createElement('textarea');
+            textarea.value = codeText;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            try {
+                document.execCommand('copy');
+                const btnTxt = document.getElementById('copyBtnTxt');
+                btnTxt.textContent = "คัดลอกสำเร็จ!";
+                setTimeout(() => btnTxt.textContent = "คัดลอกโค้ด", 2000);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function downloadCodeFile() {
+            const content = activeCodeFile === 'html' ? generatedHTMLCode : generatedGSCode;
+            const filename = activeCodeFile === 'html' ? 'Index.html' : 'Code.gs';
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize application on startup
+        window.onload = function() {
+            renderTables();
+            generateAllCode();
+        };
     </script>
 </body>
 </html>
