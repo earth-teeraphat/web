@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAS & Web App Studio - Frontend & Database Generator</title>
+    <title>GAS & Web App Studio - Enterprise Code Generator</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -270,7 +270,7 @@
         </section>
 
         <!-- ==================================================================== -->
-        <!-- TAB 3: AI FRONTEND GENERATOR (GEMINI API) -->
+        <!-- TAB 3: AI FRONTEND GENERATOR -->
         <!-- ==================================================================== -->
         <section id="sec-ai" class="hidden space-y-6">
             <div class="glass rounded-2xl p-6 border border-slate-800 shadow-2xl space-y-6">
@@ -279,7 +279,7 @@
                         <i class="fa-solid fa-robot"></i>
                     </div>
                     <div>
-                        <h2 class="text-2xl font-bold text-white">AI Frontend Code Generator (Gemini Powered)</h2>
+                        <h2 class="text-2xl font-bold text-white">AI Frontend Code Generator</h2>
                         <p class="text-slate-400 text-sm">อธิบายหน้าเว็บ Frontend หรือ UI ที่ต้องการ AI จะเขียนโค้ด HTML + Tailwind CSS + JS เชื่อม GAS ให้ทันที!</p>
                     </div>
                 </div>
@@ -317,7 +317,7 @@
         <section id="sec-output" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <!-- Left Column: Generated Code Tabs (5 Cols) -->
+                <!-- Left Column: Generated Code Tabs (6 Cols) -->
                 <div class="lg:col-span-6 space-y-4">
                     <div class="glass rounded-2xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col h-[650px]">
                         
@@ -808,9 +808,9 @@ function saveRecord(tableName, formData) {
 }
 
 /**
- * Deletes a row safely by Row Index or Primary Key
+ * Deletes a row safely by Row Index
  */
-function deleteRecord(tableName, rowIdx, primaryVal) {
+function deleteRecord(tableName, rowIdx) {
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName(tableName);
